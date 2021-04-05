@@ -45,7 +45,7 @@ struct Identifier {
 struct Id_Table
 {
 	Id_Table *father;//指向父符号表的指针
-	unordered_map<string, Identifier> name_to_id;//hash表存储名字到标识符的映射
+	map<string, Identifier> name_to_id;//hash表存储名字到标识符的映射
 }*now_ID_table;
 struct Error_Information
 {

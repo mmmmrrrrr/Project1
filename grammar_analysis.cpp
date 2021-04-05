@@ -2,11 +2,10 @@
 #include <fstream>
 #include <string>
 
-string mark_words[]   //��ź�ö��ֵ��Ӧ�ļǺţ��������
+string mark_words[]   
 {
-	/*�ս��*/
-	"EOF", //�ı�����
-	"null",//��
+	"EOF", 
+	"null",
 	"program",
 	"const",
 	"var",
@@ -31,38 +30,38 @@ string mark_words[]   //��ź�ö��ֵ��Ӧ�ļǺţ������
 	"not",
 	"uminus",
 	"id",
-	"fnum",    //����
-	"digits",  //������
-	//letter,
+	"fnum",    
+	"digits",  
+	
 	"assignop",
-	"punc_question", //?
-	"punc_not",      //~
-	"punc_comma",    //,
-	"punc_semicolon",//;
-	"punc_colon",    //:
-	"punc_point",    //.
-	"punc_round_left",  //(
-	"punc_round_right", //)
-	"punc_square_left", //[
-	"punc_square_right",//]
+	"punc_question", 
+	"punc_not",      
+	"punc_comma",    
+	"punc_semicolon",
+	"punc_colon",    
+	"punc_point",    
+	"punc_round_left",  
+	"punc_round_right", 
+	"punc_square_left", 
+	"punc_square_right",
 	"mulop_and",
-	"mulop_div",   //����
+	"mulop_div",   
 	"mulop_mod",
 	"mulop_mul",
-	"mulop_divide",//�������
+	"mulop_divide",
 	"addop_or",
 	"addop_add",
 	"addop_sub",
-	"relop_e",     //=
-	"relop_ne",    //<>
-	"relop_l",     //<
-	"relop_le",    //<=
-	"relop_g",     //>
-	"relop_ge",    //>=
-	"single_quote",//'
-	"letter",      //�ַ�����
-	"Boundary",    //---�ս������ս���ķֽ���---
-	/*���ս��*/
+	"relop_e",     
+	"relop_ne",    
+	"relop_l",     
+	"relop_le",    
+	"relop_g",     
+	"relop_ge",    
+	"single_quote",
+	"letter",      
+	"Boundary",    
+	
 	"S",
 	"programstruct",
 	"program_head",
@@ -102,8 +101,8 @@ string mark_words[]   //��ź�ö��ֵ��Ӧ�ļǺţ������
 	"simple_expression",
 	"term",
 	"factor",
-	//"��"
-	////NOW //DFA�еĵ� .
+	
+	
 };
 
 Grammar initGrammer()
@@ -202,16 +201,16 @@ Grammar initGrammer()
 	grammar.push_back({ mulop,mulop_mod });
 	grammar.push_back({ mulop,mulop_and });
 
-	//for (int i = 0; i < grammar.size(); i++)
-	//{
-	//	cout << i << " " << mark_words[grammar[i][0]] << "->";
-	//	for (int j = 1; j < grammar[i].size(); j++)
-	//	{
-	//		cout << mark_words[grammar[i][j]];
-	//		cout << " ";
-	//	}
-	//	cout << endl;
-	//}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	return grammar;
 }
@@ -221,12 +220,12 @@ fset getFIRST(Grammar grammar)
 	fset first;
 	bool change=true;
 
-	//���ķ����ķ��ս��������ĵ�һ��
+	
 	mark tem = Boundary;
 	for (int i = 0; i < grammar.size(); i++)  
 	{
 		mark now = grammar[i][0];
-		if (now != tem)   //δ����first����
+		if (now != tem)   
 		{
 			first.insert({ now,set<mark>() });
 			tem = now;
@@ -238,20 +237,20 @@ fset getFIRST(Grammar grammar)
 		change = false;
 		for (int i = 0; i < grammar.size(); i++)
 		{
-			mark now = grammar[i][1], left = grammar[i][0]; //left�����ս��
-			int before, after;  //��¼insertǰ�󼯺ϳ��ȣ��ж��Ƿ��и���
-			if (now > Boundary) //�Ƿ��ս��
+			mark now = grammar[i][1], left = grammar[i][0]; 
+			int before, after;  
+			if (now > Boundary) 
 			{
-				set<mark> nowfirst = first[now]; //�÷��ս����first��
-				if (nowfirst.find(null_) != nowfirst.end()) //first�����п�,���ǿշ��ż���first�����У��ٿ���һ�����ս��
+				set<mark> nowfirst = first[now]; 
+				if (nowfirst.find(null_) != nowfirst.end()) 
 				{
-					bool flag = true;   //�Ƿ�鵽���һ�����ս��
+					bool flag = true;   
 
 					before = first[left].size();
 					nowfirst.erase(null_);
 					first[left].insert(nowfirst.begin(), nowfirst.end());
 					after = first[left].size();
-					if (before < after)   //first�������仯
+					if (before < after)   
 					{
 						change = true;
 					}
@@ -262,13 +261,13 @@ fset getFIRST(Grammar grammar)
 						{
 							break;
 						}
-						mark nexts = grammar[i][j]; //��һ������
-						if (nexts < Boundary) //���ս��
+						mark nexts = grammar[i][j]; 
+						if (nexts < Boundary) 
 						{
 							before = first[left].size();
 							first[left].insert(nexts);
 							after = first[left].size();
-							if (before < after)   //first�������仯
+							if (before < after)   
 							{
 								change = true;
 							}
@@ -278,13 +277,13 @@ fset getFIRST(Grammar grammar)
 						else
 						{
 							set<mark> nextfirst = first[nexts];
-							if (nextfirst.find(null_) != nextfirst.end()) //�п�
+							if (nextfirst.find(null_) != nextfirst.end()) 
 							{
 								before = first[left].size();
 								nextfirst.erase(null_);
 								first[left].insert(nextfirst.begin(), nextfirst.end());
 								after = first[left].size();
-								if (before < after)   //first�������仯
+								if (before < after)   
 								{
 									change = true;
 								}
@@ -294,7 +293,7 @@ fset getFIRST(Grammar grammar)
 								before = first[left].size();
 								first[left].insert(nextfirst.begin(), nextfirst.end());
 								after = first[left].size();
-								if (before < after)   //first�������仯
+								if (before < after)   
 								{
 									change = true;
 								}
@@ -303,42 +302,42 @@ fset getFIRST(Grammar grammar)
 							}
 						}
 					}
-					if (flag) //���ж��Ƿ��ս�������һ�����ս����first���п�
+					if (flag) 
 					{
 						set<mark> f = first[grammar[i][grammar[i].size() - 1]];
-						if (f.find(null_) != f.end())   //�п�
+						if (f.find(null_) != f.end())   
 						{
 							before = first[left].size();
 							first[left].insert(null_);
 							after = first[left].size();
-							if (before < after)   //first�������仯
+							if (before < after)   
 							{
 								change = true;
 							}
 						}
 					}
 				}
-				else    //first����û�п�,�����з��ż��뵽first����
+				else    
 				{
 					if (!nowfirst.empty())
 					{
 						before = first[left].size();
 						first[left].insert(nowfirst.begin(), nowfirst.end());
 						after = first[left].size();
-						if (before < after)   //first�������仯
+						if (before < after)   
 						{
 							change = true;
 						}
 					}
 				}
 			}
-			else   //���ս����ֱ�Ӽ���first����
+			else   
 			{
 				int before, after;   
 				before = first[left].size();
 				first[left].insert(now);
 				after = first[left].size();
-				if (before < after)   //first�������仯
+				if (before < after)   
 				{
 					change = true;
 				}
@@ -346,20 +345,20 @@ fset getFIRST(Grammar grammar)
 		}
 	}
 	
-	//���,����debug
-	//cout << "***************** FIRST�� *****************" << endl;
-	//for (auto iter = first.begin(); iter != first.end(); ++iter)
-	//{
-	//	set<mark> value=iter->second;
-	//	//vector<mark> value;
-	//	cout << mark_words[iter->first] << " : ";
-	//	for (auto it = value.begin(); it != value.end(); it++)
-	//	{
-	//		cout << mark_words[*it] << " ";
-	//	}
-	//	cout << endl;
-	//}
-	//cout << endl;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	return first;
 }
@@ -369,44 +368,44 @@ fset getFOLLOW(Grammar grammar, fset first)
 	fset follow;
 	bool change = true;
 
-	//���ķ����ķ��ս��������ĵ�һ��
+	
 	mark tem = Boundary;
 	for (int i = 0; i < grammar.size(); i++)
 	{
 		mark now = grammar[i][0];
-		if (now != tem)   //δ����first����
+		if (now != tem)   
 		{
 			follow.insert({ now,set<mark>() });
 			tem = now;
 		}
 	}
-	follow[S].insert(EOF_);     //��$���뿪ʼ���ŵ�FOLLOW����
+	follow[S].insert(EOF_);     
 
 	while (change)
 	{
 		change = false;
-		int before, after; //�����жϼ����Ƿ����仯
+		int before, after; 
 		for (int i = 0; i < grammar.size(); i++)
 		{
-			vector<mark> current_line = grammar[i];  //��ǰ��
+			vector<mark> current_line = grammar[i];  
 
-			//if (i == 47)
-			//{
-			//	cout << " aaa" << endl;
-			//}
+			
+			
+			
+			
 
 			for (int j = 1; j < current_line.size(); j++)
 			{
-				mark now = current_line[j];      //��ǰ����
-				mark last = current_line[j - 1]; //ǰһ������
+				mark now = current_line[j];      
+				mark last = current_line[j - 1]; 
 
 				if (j == 1 && current_line.size() != 2)
 				{
 					continue;
 				}
-				if (j == current_line.size() - 1)  //����ǰ����Ϊ���һ��
+				if (j == current_line.size() - 1)  
 				{
-					if (now < Boundary)  //���ս��
+					if (now < Boundary)  
 					{
 						if (last > Boundary && j != 1)
 						{
@@ -420,7 +419,7 @@ fset getFOLLOW(Grammar grammar, fset first)
 					else
 					{
 						set<mark> now_first = first[now];
-						if (now_first.find(null_) != now_first.end() && j != 1 && last > Boundary) //�п�,���󲿵�follow�ӵ�ǰһ����follow��
+						if (now_first.find(null_) != now_first.end() && j != 1 && last > Boundary) 
 						{
 							before = follow[last].size();
 							follow[last].insert(follow[current_line[0]].begin(), follow[current_line[0]].end());
@@ -430,14 +429,14 @@ fset getFOLLOW(Grammar grammar, fset first)
 						}
 						now_first.erase(null_);
 
-						//���󲿵�follow�������һ����follow��
+						
 						before = follow[now].size();
 						follow[now].insert(follow[current_line[0]].begin(), follow[current_line[0]].end());
 						after = follow[now].size();
 						if (before != after)
 							change = true;
 
-						//��ǰfirst�ӵ�ǰһ��follow��
+						
 						if (last > Boundary && j != 1)
 						{
 							before = follow[last].size();
@@ -451,10 +450,10 @@ fset getFOLLOW(Grammar grammar, fset first)
 					continue;
 				}
 
-				if (last < Boundary)     //���ǰһ���������ս����ֱ�ӽ�����һ��ѭ��
+				if (last < Boundary)     
 					continue;
 
-				if (now < Boundary )       //��ǰ�������ս��
+				if (now < Boundary )       
 				{
 					before = follow[last].size();
 					follow[last].insert(now);
@@ -462,14 +461,14 @@ fset getFOLLOW(Grammar grammar, fset first)
 					if (before != after)
 						change = true;
 				}
-				else     //��ǰ�����Ƿ��ս��
+				else     
 				{
 					for (int k = j; k < current_line.size(); k++)
 					{
 						mark now2 = current_line[k];
 						mark last2 = current_line[k - 1];
 						set<mark> now2_first = first[now2];
-						if (now2 < Boundary) //���ս��
+						if (now2 < Boundary) 
 						{
 							before = follow[last2].size();
 							follow[last2].insert(now2);
@@ -484,7 +483,7 @@ fset getFOLLOW(Grammar grammar, fset first)
 								change = true;
 							break;
 						}
-						if (now2_first.find(null_) != now2_first.end()) //now2_first���п�
+						if (now2_first.find(null_) != now2_first.end()) 
 						{
 							now2_first.erase(null_);
 							before = follow[last2].size();
@@ -493,16 +492,16 @@ fset getFOLLOW(Grammar grammar, fset first)
 							if (before != after)
 								change = true;
 
-							//now2��first����last��follow��
+							
 							before = follow[last].size();
 							follow[last].insert(now2_first.begin(), now2_first.end());
 							after = follow[last].size();
 							if (before != after)
 								change = true;
 
-							if (k == current_line.size() - 1)  //����ǰ����Ϊ���һ��
+							if (k == current_line.size() - 1)  
 							{
-								//���󲿵�follow����now��follow��
+								
 								before = follow[now].size();
 								follow[now].insert(follow[current_line[0]].begin(), follow[current_line[0]].end());
 								after = follow[now].size();
@@ -510,7 +509,7 @@ fset getFOLLOW(Grammar grammar, fset first)
 									change = true;
 							}
 						}
-						else   //now2_first���޿գ�firstֱ�Ӽӽ�ȥ
+						else   
 						{
 							before = follow[last2].size();
 							follow[last2].insert(now2_first.begin(),now2_first.end());
@@ -532,45 +531,45 @@ fset getFOLLOW(Grammar grammar, fset first)
 		}
 	}
 
-	//���,����debug
-	//cout << "***************** FOLLOW�� *****************" << endl;
-	//for (auto iter = follow.begin(); iter != follow.end(); ++iter)
-	//{
-	//	set<mark> value = iter->second;
+	
+	
+	
+	
+	
 
-	//	cout << mark_words[iter->first] << " : ";
-	//	for (auto it = value.begin(); it != value.end(); it++)
-	//	{
-	//		cout << mark_words[*it] << " ";
-	//	}
-	//	cout << endl;
-	//}
-	//cout << endl;
+	
+	
+	
+	
+	
+	
+	
+	
 
 	return follow;
 }
 
-LR_PredictTable getTable(Grammar grammar)    //����LR������
+LR_PredictTable getTable(Grammar grammar)    
 {
-	vector<closure> DFA;  //�����Ŀ���淶��
-	closure current_clo;  //��ŵ�ǰ����ıհ�
-	vector<Go> go;         //���DFA����Ŀ��ָ��
+	vector<closure> DFA;  
+	closure current_clo;  
+	vector<Go> go;         
 	LR_PredictTable LRtable;
 
-	//���ķ��Ŀ�ʼ������հ� Ȼ����չ
+	
 	current_clo.sentences.push_back(grammar[0]);
-	current_clo.point_pos.push_back(1);  //�������Ҳ�������
+	current_clo.point_pos.push_back(1);  
 	extend_closure(grammar, current_clo);
 	DFA.push_back(current_clo);
 
-	//cout << "***************** closure 0 *****************" << endl;
-	//cout << "S -> ��programstruct" << endl;
+	
+	
 
-	int count = 1;  //��ǰ�հ�����������������һ���ı��
-	for (int I = 0; I < DFA.size(); I++)   //I ��ʾ��ǰ�հ���I0,I1,I2....
+	int count = 1;  
+	for (int I = 0; I < DFA.size(); I++)   
 	{
 		closure c = DFA[I];
-		vector<bool> flag; //������ʾÿ������Ƿ�δ����
+		vector<bool> flag; 
 		int c_size = c.sentences.size();
 
 		for (int i = 0; i < c_size; i++)
@@ -578,31 +577,31 @@ LR_PredictTable getTable(Grammar grammar)    //����LR������
 
 		for (int i = 0; i < c_size; i++)
 		{
-			//������Ŀ����ÿ����䣬����������Ŀ
+			
 			sentence thisline = c.sentences[i];
 			mark nextone;
 
-			if (c.point_pos[i] == thisline.size())  //��á���ķ���
+			if (c.point_pos[i] == thisline.size())  
 				nextone = null_;
 			else
 				nextone = thisline[c.point_pos[i]];
 
-			if (flag[i] == true && nextone != null_) //�˾�δ���������ҡ��������
+			if (flag[i] == true && nextone != null_) 
 			{
 				flag[i] = false;
 				closure new_closure;
 
-				//����Ƽ����µıհ���
+				
 				new_closure.sentences.push_back(thisline);
 				new_closure.point_pos.push_back(c.point_pos[i] + 1);
 
-				//���ҡ��������ͬ����䣬���ӵ���Ŀ��������չ�հ�
+				
 				for (int j = i + 1; j < c_size; j++)
 				{
 					sentence thisline_j = c.sentences[j]; 
 					mark nextone_j;
 
-					if (c.point_pos[j] == thisline_j.size())  //��á���ķ���
+					if (c.point_pos[j] == thisline_j.size())  
 						nextone_j = null_;
 					else
 						nextone_j = thisline_j[c.point_pos[j]];
@@ -610,14 +609,14 @@ LR_PredictTable getTable(Grammar grammar)    //����LR������
 					if (flag[j] == true && nextone_j == nextone) 
 					{
 						flag[j] = false;
-						//����Ƽ����µıհ���
+						
 						new_closure.sentences.push_back(thisline_j);
 						new_closure.point_pos.push_back(c.point_pos[j] + 1);
 					}
 				}
 				extend_closure(grammar, new_closure);
 
-				//���new_closure�Ƿ��Ѵ���
+				
 				int isUnique = true;
 
 				for (int j = 0; j < DFA.size(); j++)
@@ -626,7 +625,7 @@ LR_PredictTable getTable(Grammar grammar)    //����LR������
 
 					if (exist_closure.point_pos.size() == new_closure.point_pos.size())
 					{
-						bool f = true;  //T���ҵ���ͬ��
+						bool f = true;  
 						
 						for (int k = 0; k < exist_closure.point_pos.size(); k++)
 						{
@@ -640,7 +639,7 @@ LR_PredictTable getTable(Grammar grammar)    //����LR������
 							f = false;
 							break;
 						} 
-						if (f)   //�ҵ�����ȫ��ͬ�ıհ�
+						if (f)   
 						{
 							isUnique = false;
 							Go tem;
@@ -648,14 +647,14 @@ LR_PredictTable getTable(Grammar grammar)    //����LR������
 							tem.from = I;
 							tem.to = j;
 							tem.by = nextone;
-							go.push_back(tem);  //go(I,nextone)=j
+							go.push_back(tem);  
 
 							break;
 						}
 					}
 				}
 
-				//�����ظ�����뵱ǰDFA
+				
 				if (isUnique) {
 					Go tem;
 
@@ -664,25 +663,25 @@ LR_PredictTable getTable(Grammar grammar)    //����LR������
 					tem.by = nextone;
 
 					DFA.push_back(new_closure);
-					go.push_back(tem);  //go(I,nextone)=j
+					go.push_back(tem);  
 
-					//���,����debug
-					//cout << "***************** closure " << count << " *****************" << endl;
-					//for (int k = 0; k < new_closure.sentences.size(); k++)
-					//{
-					//	for (int j = 0; j < new_closure.sentences[k].size(); j++)
-					//	{
-					//		if (j == 1)
-					//			cout << "->";
-					//		if (j == new_closure.point_pos[k])
-					//			cout << "��";
-					//		cout << mark_words[new_closure.sentences[k][j]] << " ";
-					//	}
-					//	if (new_closure.point_pos[k] == new_closure.sentences[k].size())
-					//		cout << "��";
-					//	cout << endl;
-					//}
-					//cout << endl;
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
 
 					count++;
 				}
@@ -690,40 +689,35 @@ LR_PredictTable getTable(Grammar grammar)    //����LR������
 		}
 	}
 
-	//���ķ���FIRST��FOLLOW����Ϊ����һ�����������
+	
 	fset first = getFIRST(grammar);
 	fset follow = getFOLLOW(grammar, first);
 	
 
-	/* SLR(1)�������Ĺ��죺
-
-		����x    �ƽ�Sx
-		����x    ��ԼRx
-		 0       ����
-		-233     ����	*/
-	//��ʼ��
+	
+	
 	vector<int> tem;
 	for (int i = 0; i < factor + 1; i++)
 		tem.push_back(0);
 	for (int i = 0; i < DFA.size(); i++)
 		LRtable.push_back(tem);
 
-	//�����ƽ���
+	
 	for (int i = 0; i < go.size(); i++)
 	{
 		LRtable[go[i].from][go[i].by] = go[i].to;
 	}
 
-	//�����Լ��
+	
 	for (int i = 0; i < DFA.size(); i++)
 	{
 		closure c = DFA[i];
 		for (int j = 0; j < c.point_pos.size(); j++)
 		{
-			if (c.point_pos[j] == c.sentences[j].size())   //�������ĩβ
+			if (c.point_pos[j] == c.sentences[j].size())   
 			{
 				sentence reduce = c.sentences[j];
-				int k = 0;    //No:�ù�Լ�����grammar�е����
+				int k = 0;    
 
 				for (; k < grammar.size(); k++)
 				{
@@ -744,21 +738,21 @@ LR_PredictTable getTable(Grammar grammar)    //����LR������
 
 	}
 
-	//��ӡԤ�������
-	//cout << "************************* Ԥ������� *************************" << endl;
-	//for (int i = 0; i < DFA.size(); i++) 
-	//{
-	//	for (int j = 0; j < (factor + 1); j++)
-	//	{
-	//		cout << LRtable[i][j] << " ";
-	//	}
-	//	cout << endl;
-	//}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	return LRtable;
 }
 
-void extend_closure(Grammar grammar, closure& c)         //��ɱհ�����չ
+void extend_closure(Grammar grammar, closure& c)         
 {
 	for (int i = 0; i < c.sentences.size(); i++) 
 	{
@@ -769,10 +763,10 @@ void extend_closure(Grammar grammar, closure& c)         //��ɱհ����
 		else
 			nextone = thisline[c.point_pos[i]];
 
-		if (nextone > Boundary)   //����Ƿ��ս��������Ҫ��չ 
+		if (nextone > Boundary)   
 		{
 			int k = 0;
-			for (; k < grammar.size(); k++)   //�ҵ���nextone��ͷ�����
+			for (; k < grammar.size(); k++)   
 			{
 				if (grammar[k][0] == nextone)
 					break;
@@ -785,11 +779,11 @@ void extend_closure(Grammar grammar, closure& c)         //��ɱհ����
 
 				if (line[1] == null_) 
 				{
-					point_pos = 2;  //������null_����
+					point_pos = 2;  
 				}
 				else 
 				{
-					point_pos = 1;  //�������Ҳ�������
+					point_pos = 1;  
 				}
 
 				if (!in_closure(c, line, point_pos))
@@ -806,7 +800,7 @@ void extend_closure(Grammar grammar, closure& c)         //��ɱհ����
 
 
 
-bool in_closure(closure c, sentence s, int pos) //�ж�һ���հ����Ƿ���������
+bool in_closure(closure c, sentence s, int pos) 
 {
 	for (int i = 0; i < c.sentences.size(); i++)
 	{
@@ -834,7 +828,7 @@ vector<token> getToken(){
 	token_file.open("C:\\acm\\coding\\Semantic_Analysis\\lexOut.txt");
 	int n = 0;
 	token tem;
-	while (token_file >> buffer) //��ȡ�Ǻ���
+	while (token_file >> buffer) 
 	{
 		if (n == 0)
 		{
@@ -858,15 +852,15 @@ vector<token> getToken(){
 }
 
 
-vector<int> control_program(LR_PredictTable LRtable, Grammar grammar,vector<token>tokens) //���з�������
+vector<int> control_program(LR_PredictTable LRtable, Grammar grammar,vector<token>tokens) 
 {
-	vector<int> reduces;  //����ʽ����
-	vector<int> state;    //״̬ջ
-	vector<int> symbol;   //����ջ
-	int action;           //��ǰ����Ķ���
-	bool no_error = true; //ǰ���Ƿ���ִ���
+	vector<int> reduces;  
+	vector<int> state;    
+	vector<int> symbol;   
+	int action;           
+	bool no_error = true; 
 
-	//��ʼ��ջ
+	
 	state.push_back(0);
 	symbol.push_back(EOF_);
 
@@ -876,17 +870,17 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar,vector<toke
 		int now_line = tokens[i].line;
 		string now_content = tokens[i].content;
 
-		//����ջ�����ݣ��Ҷ�Ӧ����Ķ���
+		
 		action = LRtable[state.back()][now_mark];
 
-		if (action > 0)   //�ƽ�shift
+		if (action > 0)   
 		{
 			state.push_back(action);
 			symbol.push_back(now_mark);
 		}
-		else if (action < 0) //��Լreduce
+		else if (action < 0) 
 		{
-			if (action == -233) //ACC���ܶ���
+			if (action == -233) 
 			{
 				if (no_error)
 				{
@@ -904,7 +898,7 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar,vector<toke
 
 			reduces.push_back(-action);
 
-			//����ջ����len������
+			
 			int len = reduce.size() - 1;
 			if (reduce[1] == null_)
 				len = 0;
@@ -916,11 +910,11 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar,vector<toke
 
 			state.push_back(LRtable[state.back()][reduce[0]]);
 			symbol.push_back(reduce[0]);
-			i--; //����ֱ�Ӷ�ȡ��һ������
+			i--; 
 		}
-		else  //����
+		else  
 		{
-			no_error = false; //��������
+			no_error = false; 
 
 			if (now_mark == EOF_)
 			{

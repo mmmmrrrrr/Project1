@@ -15,12 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="源.cpp">
+    <ClCompile Include="grammar_analysis.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="semantic_analysis.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="1.h">
+    <ClInclude Include="semantic_analysis.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="grammar_analysis.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

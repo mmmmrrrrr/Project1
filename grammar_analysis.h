@@ -11,9 +11,9 @@ using namespace std;
 
 enum mark
 {
-	/*�ս��*/
-	EOF_, //�ı�����
-	null_,//��
+	
+	EOF_, 
+	null_,
 	program_,
 	const_,
 	var_,
@@ -38,38 +38,37 @@ enum mark
 	not_,
 	uminus_,
 	id,
-	fnum,    //����
-	digits,  //������
-	//letter,
+	fnum,    
+	digits,  
+	
 	assignop,
-	punc_question, //?
-	punc_not,      //~
-	punc_comma,    //,
-	punc_semicolon,//;
-	punc_colon,    //:
-	punc_point,    //.
-	punc_round_left,  //(
-	punc_round_right, //)
-	punc_square_left, //[
-	punc_square_right,//]
+	punc_question, 
+	punc_not,      
+	punc_comma,    
+	punc_semicolon,
+	punc_colon,    
+	punc_point,    
+	punc_round_left,  
+	punc_round_right, 
+	punc_square_left, 
+	punc_square_right,
 	mulop_and,
-	mulop_div,   //����
+	mulop_div,   
 	mulop_mod,
 	mulop_mul,
-	mulop_divide,//�������
+	mulop_divide,
 	addop_or,
 	addop_add,
 	addop_sub,
-	relop_e,     //=
-	relop_ne,    //<>
-	relop_l,     //<
-	relop_le,    //<=
-	relop_g,     //>
-	relop_ge,    //>=
-	single_quote,//'
-	letter,      //�ַ�����  �确a����1��
-	Boundary,    //---�ս������ս���ķֽ���---
-	/*���ս��*/
+	relop_e,     
+	relop_ne,    
+	relop_l,     
+	relop_le,    
+	relop_g,     
+	relop_ge,    
+	single_quote,
+	letter,      
+	Boundary,    
 	S,
 	programstruct,
 	program_head,
@@ -110,36 +109,35 @@ enum mark
 	term,
 	factor,
 
-	//NOW //DFA�еĵ� .
+	
 };
 
-typedef vector<mark> sentence;    //ÿһ���﷨����
-typedef vector<sentence> Grammar; //�����﷨
-typedef map<mark, set<mark>> fset;//��first����follow��
-typedef vector<vector<int>> LR_PredictTable;    //LRԤ�������      
+typedef vector<mark> sentence;    
+typedef vector<sentence> Grammar; 
+typedef map<mark, set<mark>> fset;
+typedef vector<vector<int>> LR_PredictTable;    
 typedef struct {
-	vector<sentence> sentences;   //������
-	vector<int> point_pos;        //���λ��,�����һ��������point_pos���ķ���
+	vector<sentence> sentences;   
+	vector<int> point_pos;        
 }closure;
 typedef struct{
 	int from;  
 	mark by;   
 	int to;
-}Go;                              //go(from,by)=to
+}Go;                              
 typedef struct {
-	int mark; //��Ӧ�Ǻŵ�C++ö��ֵ
-	int line; //�к�
-	string content; //�Ǻ�����
+	int mark; 
+	int line; 
+	string content; 
 }token;
 
 vector<token> getToken();
-Grammar initGrammer();                           //�����﷨����
-fset getFIRST(Grammar grammar);                  //����FIRST��
-fset getFOLLOW(Grammar grammar, fset first);     //����FOLLOW��
-LR_PredictTable getTable(Grammar grammar);       //����LR������
-vector<int> control_program(LR_PredictTable LRtable, Grammar grammar,vector<token>tokens); //���з�������
+Grammar initGrammer();                           
+fset getFIRST(Grammar grammar);                  
+fset getFOLLOW(Grammar grammar, fset first);     
+LR_PredictTable getTable(Grammar grammar);       
+vector<int> control_program(LR_PredictTable LRtable, Grammar grammar,vector<token>tokens); 
 
-void extend_closure(Grammar grammer, closure &c);//��ɱհ�����չ
-bool in_closure(closure c, sentence s, int pos); //�ж�һ���հ����Ƿ���������
-
+void extend_closure(Grammar grammer, closure &c);
+bool in_closure(closure c, sentence s, int pos); 
 #endif
