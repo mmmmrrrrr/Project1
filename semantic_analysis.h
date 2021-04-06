@@ -56,6 +56,7 @@ struct Error_Information
 vector<string>operator_stack;
 vector<Identifier> Id_stack;
 
+void encouter_an_error(string error_information);
 Identifier search_identifier(string name);//根据名字进行查找，返回标识符信息
 bool insert_identifier(Identifier id);//插入标识符到当前位置
 void location();

@@ -1,5 +1,9 @@
 #include "semantic_analysis.h"
 #include "grammar_analysis.h"
+void encouter_an_error(string error_information){
+	cout<<error_information;
+	exit(0);
+}
 Identifier search_identifier(string name)
 {
 	for (Id_Table *t = now_ID_table; t != NULL; t = t->father)
@@ -44,50 +48,102 @@ void semantic_analysis(vector<int> &product_sequence, vector<token> token_sequen
 		case 0:
 			return;
 
-		case 5:
+		case 3://program_head->program id
+			temp=temp1;
+			token_sequence_position+=2;
 			break;
+
+		case 5://idlist->idlist punc_comma id
+			temp=temp1;
+			temp.name=token_sequence[token_sequence_position].content;
+			Id_stack.push_back(temp);
+			token_sequence_position+=2;	
+			break;
+
 		case 6://idlist->id
 			temp=temp1;
-			temp.name=token_sequence[token_sequence_position++].mark;
-			token_sequence_position.push(
+			temp.name=token_sequence[token_sequence_position].content;
+			Id_stack.push_back(temp);
+			token_sequence_position+=1;	
+			break;
+
 		case 11: //const_value->addop_add num
 			Id_stack[Id_stack.size() - 1].identifer_type = _constant;
 			break;
+
 		case 12: //const_value->addop_sub num
 			Id_stack[Id_stack.size() - 1].identifer_type = _constant;
 			Id_stack[Id_stack.size() - 1].data_type.constant_value = -Id_stack[Id_stack.size() - 1].data_type.constant_value;
 			break;
+
 		case 13: //const_value->num  //?
 			Id_stack[Id_stack.size() - 1].identifer_type = _constant;
 			insert_identifier(temp);
 			break;
+
 		case 14: //const_value->letter
 			temp = temp1;
 			temp.data_type.basic_type = _char;
 			temp.identifer_type = _constant;
 			Id_stack.push_back(temp);
-			///////////////
+			break;
+
+		case 15:// var_declarations->var var_declaration punc_semicolon
+			token_sequence_position+=2;
+			break;
+
+		case 18: //var_declaration->idlist punc_colon type
+			temp=Id_stack[Id_stack.size()-1];
+			Id_stack.pop_back();
+			while(Id_stack.size()){
+				Id_stack[Id_stack.size()-1].data_type=temp.data_type;
+				Id_stack[Id_stack.size()-1].identifer_type=_variable;
+				if(!insert_identifier(Id_stack[Id_stack.size()-1])){
+					encouter_an_error("repeated definition");
+					return;
+				}
+				Id_stack.pop_back();
+			}
+			++token_sequence_position;
+			break;
+
+		case 19://type->basic_type
+			break;
+
 		case 21: //basic_type->integer
 			temp = temp1;
 			temp.data_type.basic_type = _integer;
 			Id_stack.push_back(temp);
+			++token_sequence_position;
 			break;
+
 		case 22: //basic_type->real
 			temp = temp1;
 			temp.data_type.basic_type = _real;
 			Id_stack.push_back(temp);
+			++token_sequence_position;
 			break;
+
 		case 23: //basic_type->boolean
 			temp = temp1;
 			temp.data_type.basic_type = _boolean;
 			Id_stack.push_back(temp);
+			++token_sequence_position;
 			break;
+
 		case 24: //basic_type->char
 			temp = temp1;
 			temp.data_type.basic_type = _char;
 			Id_stack.push_back(temp);
+			++token_sequence_position;
 			break;
-			/////////////////////////////////////////////
+
+		case 28://subprogram_declarations->null
+			break;
+
+		case 56://id_varpart->null
+			break;
+
 		case 74: //factor->addop_sub factor
 			Id_stack[Id_stack.size() - 1].identifer_type = _constant;
 			Id_stack[Id_stack.size() - 1].data_type.constant_value = -Id_stack[Id_stack.size() - 1].data_type.constant_value;
@@ -150,6 +206,7 @@ void semantic_analysis(vector<int> &product_sequence, vector<token> token_sequen
 		}
 	}
 }
+
 int main()
 {
 	vector<token> token_sequence;
@@ -165,6 +222,7 @@ int main()
 
 	for (auto i : product_sequence)
 		cout << i << endl;
-
+	for (auto i:token_sequence)
+		cout<<i.content<<endl;
 	return 0;
 }
