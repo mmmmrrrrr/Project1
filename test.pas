@@ -1,8 +1,8 @@
 program example;
 var
-	a:real;
+	a,b:integer;
 
 begin
-	a:=true;
+	a:=1*2.0+3;
 end.
 

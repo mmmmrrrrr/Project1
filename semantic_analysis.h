@@ -7,7 +7,6 @@ enum Basic_Type
 	_real,
 	_boolean,
 	_char,
-	_array
 };
 struct Data_Type {
 	Basic_Type basic_type;
