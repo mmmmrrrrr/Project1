@@ -9,7 +9,7 @@ bool Data_Type::operator==(const Data_Type &t) const
 {
 	if (t.basic_type == basic_type)
 		return 1;
-	else if (max(t.basic_type, basic_type) < 2)
+	else if (max(t.basic_type, basic_type) < 3)
 		return 1;
 	else
 		return 0;
@@ -25,6 +25,7 @@ Identifier search_identifier(string name)
 } //根据名字进行查找，返回标识符信息
 bool insert_identifier(Identifier id)
 {
+	cout << id.is_error << endl;
 	if (now_ID_table->name_to_id.find(id.name) != now_ID_table->name_to_id.end())
 		return 0;
 	now_ID_table->name_to_id[id.name] = id;
@@ -49,7 +50,7 @@ void init_ID_Table()
 }
 void semantic_analysis(vector<int> &product_sequence, vector<token> token_sequence)
 {
-	Identifier temp, temp1;
+	Identifier temp;
 	int token_sequence_position = 0;
 	string operator_stack_top;
 	for (auto i : product_sequence)
@@ -57,6 +58,7 @@ void semantic_analysis(vector<int> &product_sequence, vector<token> token_sequen
 		cout << i << ' ';
 		if (i)
 			cout << token_sequence[token_sequence_position].content << endl;
+		
 		switch (i)
 		{
 		case 0: // S->programstruct
@@ -334,6 +336,7 @@ void semantic_analysis(vector<int> &product_sequence, vector<token> token_sequen
 			cout << "---" << token_sequence[token_sequence_position].content << endl;
 
 			temp = search_identifier(Id_stack[Id_stack.size() - 1].name);
+			cout << temp.is_error << endl;
 			if (temp.is_error)
 			{
 				encouter_an_error("use undefined variable.", token_sequence[token_sequence_position].line);
@@ -443,7 +446,7 @@ void semantic_analysis(vector<int> &product_sequence, vector<token> token_sequen
 				}
 				else
 				{
-					if (temp.data_type.basic_type >1)
+					if (temp.data_type.basic_type >2)
 						encouter_an_error("not integer(real) type in divide(mul).", token_sequence[token_sequence_position - 1].line);
 				}
 				Id_stack.pop_back();
@@ -479,7 +482,7 @@ void semantic_analysis(vector<int> &product_sequence, vector<token> token_sequen
 			break;
 
 		case 74: // factor->addop_sub factor
-			if(Id_stack[Id_stack.size()-1].data_type.basic_type>1){
+			if(Id_stack[Id_stack.size()-1].data_type.basic_type>2){
 				encouter_an_error("not integer(real) type in minus.",token_sequence[ token_sequence_position-1].line);
 			}
 			token_sequence_position+=1;

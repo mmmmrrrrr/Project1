@@ -3,7 +3,7 @@
 using namespace std;
 enum Basic_Type
 {
-	_integer = 0,
+	_integer = 1,
 	_real,
 	_boolean,
 	_char,
@@ -28,7 +28,7 @@ struct Parameter {
 };
 enum Identifer_Type
 {
-	_constant = 0,
+	_constant = 1,
 	_variable,
 	_procedure,
 	_function
