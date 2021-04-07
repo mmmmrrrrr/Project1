@@ -108,15 +108,23 @@ void semantic_analysis(vector<int> &product_sequence, vector<token> token_sequen
 
 		case 9: // const_declaration->const_declaration punc_semicolon id relop_e const_value
 			Id_stack[Id_stack.size() - 1].name = token_sequence[token_sequence_position + 1].content;
-			insert_identifier(Id_stack[Id_stack.size() - 1]);
+			if(!insert_identifier(Id_stack[Id_stack.size() - 1])){
+					encouter_an_error("repeated definition", token_sequence[token_sequence_position].line);
+					return;
+
+			}
 			Id_stack.pop_back();
 			token_sequence_position += 3;
 			break;
 
 		case 10: // const_declaration->id relop_e const_value
 			Id_stack[Id_stack.size() - 1].name = token_sequence[token_sequence_position].content;
-			insert_identifier(Id_stack[Id_stack.size() - 1]);
+			if(!insert_identifier(Id_stack[Id_stack.size() - 1])){
+					encouter_an_error("repeated definition", token_sequence[token_sequence_position].line);
+					return;
+			}
 			Id_stack.pop_back();
+
 			token_sequence_position += 2;
 			break;
 
@@ -330,7 +338,7 @@ void semantic_analysis(vector<int> &product_sequence, vector<token> token_sequen
 			{
 				encouter_an_error("use undefined variable.", token_sequence[token_sequence_position].line);
 			}
-			if (Id_stack[Id_stack.size() - 1].identifer_type = _constant)
+			if (Id_stack[Id_stack.size() - 1].identifer_type == _constant)
 			{
 				encouter_an_error("use constant error.", token_sequence[token_sequence_position].line);
 			}

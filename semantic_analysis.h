@@ -41,7 +41,7 @@ struct Identifier {
 	vector<Parameter> parameter_list;//参数列表
 	Data_Type return_value_data_type;//返回值类型
 	bool is_error;//是否存在错误
-}error_id;
+}error_id,temp1;
 struct Id_Table
 {
 	Id_Table *father;//指向父符号表的指针
