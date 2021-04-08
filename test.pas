@@ -1,8 +1,9 @@
 program example;
 var
 	a,b:integer;
+	c:real;
 
 begin
-	a:=1*2.0+3;
+	c:=a*b+a div c;
 end.
 
