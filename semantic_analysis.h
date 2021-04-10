@@ -59,6 +59,8 @@ struct Error_Information
 
 vector<string> operator_stack;
 vector<Id> id_stack;
+vector<Id> idList;
+vector<vector<Id>> exprListStack;
 map<int, string> numToProduct;
 
 void encouter_an_error(string error_information, int line);

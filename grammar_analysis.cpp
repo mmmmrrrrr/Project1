@@ -903,6 +903,7 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 				else
 				{
 					cout << "Failed! there're some errors." << endl;
+					exit(0);
 				}
 				reduces.push_back(0);
 				break;
@@ -951,6 +952,7 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 			if (now_mark == EOF_)
 			{
 				cout << "Failed! something is missing." << endl;
+				exit(0);
 				break;
 			}
 				

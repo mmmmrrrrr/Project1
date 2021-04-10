@@ -25,6 +25,7 @@ Id search_id(string name)
 } //根据名字进行查找，返回标识符信息
 bool insert_id(Id id)
 {
+	cout << "id.dim"<<id.data_type.dimension << endl;
 	cout << id.is_error << endl;
 	if (now_id_table->name_to_id.find(id.name) != now_id_table->name_to_id.end())
 		return 0;
@@ -51,11 +52,11 @@ void init_ID_Table()
 void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 {
 	Id temp;
-	int token_seq_pos = 0;
+	int token_seq_pos = 0, mi, mx;
 	string operator_stack_top;
 	for (auto i : product_seq)
 	{
-		cout <<i<<": "<< numToProduct[i] << endl;
+		cout << i << ": " << numToProduct[i] << endl;
 		if (i)
 			cout << token_seq[token_seq_pos].content << endl;
 
@@ -65,9 +66,9 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			relocation();
 			cout << token_seq_pos << ' ' << token_seq.size() << endl;
 			if (token_seq_pos != token_seq.size())
-				cout << "not use out" << endl;
+				cout << "Token not use out." << endl;
 			else
-				cout << "use out" << endl;
+				cout << "Token use out." << endl;
 			return;
 			break;
 
@@ -76,7 +77,7 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			break;
 
 		case 2: // program_head->program id punc_round_left idlist punc_round_right
-			id_stack.clear();
+			idList.clear();
 			token_seq_pos += 4;
 			break;
 
@@ -90,14 +91,14 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 		case 5: // idlist->idlist punc_comma id
 			temp = temp1;
 			temp.name = token_seq[token_seq_pos + 1].content;
-			id_stack.push_back(temp);
+			idList.push_back(temp);
 			token_seq_pos += 2;
 			break;
 
 		case 6: // idlist->id
 			temp = temp1;
 			temp.name = token_seq[token_seq_pos].content;
-			id_stack.push_back(temp);
+			idList.push_back(temp);
 			token_seq_pos += 1;
 			break;
 
@@ -161,35 +162,35 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 
 		case 17: // var_declaration->var_declaration punc_semicolon idlist punc_colon type
 			temp = id_stack[id_stack.size() - 1];
-			id_stack.pop_back();
-			while (id_stack.size())
+			for(auto j:idList)
 			{
-				id_stack[id_stack.size() - 1].data_type = temp.data_type;
-				id_stack[id_stack.size() - 1].id_type = _variable;
-				if (!insert_id(id_stack[id_stack.size() - 1]))
+				j.data_type = temp.data_type;
+				j.id_type = _variable;
+				if (!insert_id(j))
 				{
 					encouter_an_error("repeated definition", token_seq[token_seq_pos].line);
 					return;
 				}
-				id_stack.pop_back();
 			}
+			idList.clear();
+			id_stack.pop_back();
 			token_seq_pos += 2;
 			break;
 
 		case 18: // var_declaration->idlist punc_colon type
 			temp = id_stack[id_stack.size() - 1];
-			id_stack.pop_back();
-			while (id_stack.size())
+			while (idList.size())
 			{
-				id_stack[id_stack.size() - 1].data_type = temp.data_type;
-				id_stack[id_stack.size() - 1].id_type = _variable;
-				if (!insert_id(id_stack[id_stack.size() - 1]))
+				idList[idList.size() - 1].data_type = temp.data_type;
+				idList[idList.size() - 1].id_type = _variable;
+				if (!insert_id(idList[idList.size() - 1]))
 				{
 					encouter_an_error("repeated definition", token_seq[token_seq_pos].line);
 					return;
 				}
-				id_stack.pop_back();
+				idList.pop_back();
 			}
+			id_stack.pop_back();
 			token_seq_pos += 1;
 			break;
 
@@ -197,7 +198,8 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			break;
 
 		case 20: // type->array punc_square_left period punc_square_right of basic_type
-
+			id_stack[id_stack.size() - 2].data_type.basic_type = id_stack[id_stack.size() - 1].data_type.basic_type;
+			id_stack.pop_back();
 			token_seq_pos += 4;
 			break;
 
@@ -230,10 +232,30 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			break;
 
 		case 25: // period->period punc_comma digits punc_point punc_point digits
+			mi = atoi(token_seq[token_seq_pos + 1].content.c_str());
+			mx = atoi(token_seq[token_seq_pos + 4].content.c_str());
+			if (mi > mx)
+			{
+				encouter_an_error("lower_bound greater than upper_bound", token_seq[token_seq_pos].line);
+			}
+			id_stack[id_stack.size() - 1].data_type.dimension += 1;
+			id_stack[id_stack.size() - 1].data_type.lower_bound.push_back(mi);
+			id_stack[id_stack.size() - 1].data_type.upper_bound.push_back(mx);
 			token_seq_pos += 5;
 			break;
 
 		case 26: // period->digits punc_point punc_point digits
+			temp = temp1;
+			temp.data_type.dimension = 1;
+			mi = atoi(token_seq[token_seq_pos].content.c_str());
+			mx = atoi(token_seq[token_seq_pos + 3].content.c_str());
+			if (mi > mx)
+			{
+				encouter_an_error("lower_bound greater than upper_bound", token_seq[token_seq_pos].line);
+			}
+			temp.data_type.lower_bound.push_back(mi);
+			temp.data_type.upper_bound.push_back(mx);
+			id_stack.push_back(temp);
 			token_seq_pos += 4;
 			break;
 
@@ -297,10 +319,10 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 					encouter_an_error("different assignment types.", token_seq[token_seq_pos].line);
 			}
 			else
-				encouter_an_error("different assignment types.", token_seq[token_seq_pos].line);
+				encouter_an_error("different assignment types ", token_seq[token_seq_pos].line);
 			id_stack.pop_back();
 			id_stack.pop_back();
-			++token_seq_pos;
+			token_seq_pos += 1;
 			break;
 
 		case 45: // statement->procedure_call
@@ -310,15 +332,34 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			break;
 
 		case 47: // statement->if expression then statement else_part
+			if (id_stack[id_stack.size() - 1].data_type.basic_type != _boolean)
+			{
+				encouter_an_error("not boolean type in if expression ", token_seq[token_seq_pos].line);
+			}
+			token_seq_pos += 2;
 			break;
 
 		case 48: // statement->for id assignop expression to expression do statement
+			temp = search_id(token_seq[token_seq_pos - 1].content);
+			if (temp.data_type.basic_type == _integer)
+			{
+				encouter_an_error("not integer type in for if id ", token_seq[token_seq_pos].line);
+			}
+			if (id_stack[id_stack.size() - 1].data_type.basic_type != _integer || id_stack[id_stack.size() - 2].data_type.basic_type != _integer)
+			{
+				encouter_an_error("not integer type in for if expression ", token_seq[token_seq_pos].line);
+			}
+			id_stack.pop_back();
+			id_stack.pop_back();
+			token_seq_pos += 5;
 			break;
 
 		case 49: // statement->read punc_round_left variable_list punc_round_right
+			token_seq_pos += 3;
 			break;
 
 		case 50: // statement->write punc_round_left expression_list punc_round_right
+			token_seq_pos += 3;
 			break;
 
 		case 51: // statement->null
@@ -342,12 +383,13 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			{
 				encouter_an_error("use undefined variable.", token_seq[token_seq_pos].line);
 			}
-			if (id_stack[id_stack.size() - 1].id_type == _constant)
+			/*if (id_stack[id_stack.size() - 2].id_type == _constant)
 			{
 				encouter_an_error("use constant error.", token_seq[token_seq_pos].line);
-			}
+			}*/
 			if (temp.data_type.dimension != id_stack[id_stack.size() - 1].data_type.dimension)
 			{
+				cout << temp.data_type.dimension << ' ' << id_stack[id_stack.size() - 1].data_type.dimension << endl;
 				encouter_an_error("use array error.", token_seq[token_seq_pos].line);
 			}
 			id_stack[id_stack.size() - 1] = temp;
@@ -355,6 +397,17 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			break;
 
 		case 55: // id_varpart->punc_square_left expression_list puncsquare_right
+			for (auto j : exprListStack[exprListStack.size() - 1])
+			{
+				if (j.data_type.basic_type != _integer)
+					encouter_an_error("use array error.", token_seq[token_seq_pos].line);
+			}
+			temp = temp1;
+			temp.data_type.dimension = exprListStack[exprListStack.size() - 1].size();
+			cout << "dim:"<<temp.data_type.dimension << endl;
+			exprListStack.pop_back();
+			id_stack.push_back(temp);
+			token_seq_pos += 2;
 			break;
 
 		case 56: // id_varpart->null
@@ -369,15 +422,21 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			break;
 
 		case 59: // else_part->else statement
+			token_seq_pos += 1;
 			break;
 
 		case 60: // else_part->null
 			break;
 
 		case 61: // expression_list->expression_list punc_comma expression
+			exprListStack[exprListStack.size() - 1].push_back(id_stack[id_stack.size() - 1]);
+			id_stack.pop_back();
+			token_seq_pos += 1;
 			break;
 
 		case 62: // expression_list->expression
+			exprListStack.push_back(vector<Id>(1, id_stack[id_stack.size() - 1]));
+			id_stack.pop_back();
 			break;
 
 		case 63: // expression->simple_expression relop simple_expression
@@ -572,8 +631,14 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			token_seq_pos += 1;
 			break;
 		}
-		
-		if(id_stack.size())cout <<id_stack.size()<<":"<< (int)id_stack[id_stack.size() - 1].data_type.basic_type<<"xxx" << endl;
+
+		if (id_stack.size())
+			cout << id_stack.size() << ":" << (int)id_stack[id_stack.size() - 1].data_type.basic_type << "xxx" << endl;
+		else
+			cout << id_stack.size() << ":"  << "xxx" << endl;
+		cout << "exprListStackSize"<<exprListStack.size() << endl;
+		if(exprListStack.size())
+			cout << 'z'<<exprListStack[exprListStack.size()-1].size() << endl;
 	}
 }
 
@@ -581,7 +646,7 @@ int main()
 {
 	ifstream productIn;
 	productIn.open("C:\\acm\\coding\\Project1\\production_sequence.pas");
-	for (int i = 1; i <= 90;++i)
+	for (int i = 1; i <= 90; ++i)
 	{
 		int x;
 		string y;
