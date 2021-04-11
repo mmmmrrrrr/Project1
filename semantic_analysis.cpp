@@ -1,5 +1,4 @@
 #include "semantic_analysis.h"
-#include "grammar_analysis.h"
 void encouter_an_error(string error_information, int line)
 {
 	cout << error_information << "in line " << line << "." << endl;
@@ -25,7 +24,7 @@ Id search_id(string name)
 } //根据名字进行查找，返回标识符信息
 bool insert_id(Id id)
 {
-	cout << "id.dim"<<id.data_type.dimension << endl;
+	cout << "id.dim" << id.data_type.dimension << endl;
 	cout << id.is_error << endl;
 	if (now_id_table->name_to_id.find(id.name) != now_id_table->name_to_id.end())
 		return 0;
@@ -44,12 +43,12 @@ void relocation()
 	delete now_id_table;
 	now_id_table = t;
 } //重定位
-void init_ID_Table()
+void init_id_table()
 {
 	error_id.is_error = 1;
 	location();
 }
-void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
+void semantic_analysis(const vector<int> &product_seq, const vector<token> &token_seq)
 {
 	Id temp;
 	int token_seq_pos = 0, mi, mx;
@@ -162,7 +161,7 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 
 		case 17: // var_declaration->var_declaration punc_semicolon idlist punc_colon type
 			temp = id_stack[id_stack.size() - 1];
-			for(auto j:idList)
+			for (auto &j : idList)
 			{
 				j.data_type = temp.data_type;
 				j.id_type = _variable;
@@ -260,42 +259,108 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			break;
 
 		case 27: // subprogram_declarations->subprogram_declarations subprogram punc_semicolon
+			token_seq_pos += 1;
 			break;
 
 		case 28: // subprogram_declarations->null
 			break;
 
 		case 29: // subprogram->subprogram_head punc_semicolon subprogram_body
+			relocation();
+			token_seq_pos += 1;
 			break;
 
 		case 30: // subprogram_head->procedure id formal_parameter
+			temp = temp1;
+			temp.id_type = _procedure;
+			temp.name = token_seq[token_seq_pos + 1].content;
+			for (auto j : paramList)
+			{
+				cout << "j.data_type.basic_type=" << j.data_type.basic_type << endl;
+				temp.param_list.push_back({j.name, j.data_type});
+			}
+			insert_id(temp);
+			location();
+			for (auto j : paramList)
+				insert_id(j);
+			//parameter insert id table.
+			paramList.clear();
+			token_seq_pos += 2;
 			break;
 
 		case 31: // subprogram_head->function id formal_parameter punc_colon basic_type
+			temp = temp1;
+			temp.id_type = _function;
+			temp.name = token_seq[token_seq_pos + 1].content;
+			temp.return_value_data_type = id_stack[id_stack.size() - 1].data_type;
+			for (auto j : paramList)
+				temp.param_list.push_back({j.name, j.data_type});
+			insert_id(temp);
+			location();
+			for (auto j : paramList)
+				insert_id(j);
+			//parameter insert id table.
+			temp = temp1;
+			temp.id_type = _variable;
+			temp.name = token_seq[token_seq_pos + 1].content;
+			temp.data_type = id_stack[id_stack.size() - 1].data_type;
+			insert_id(temp);
+			//return value insert id table.
+			paramList.clear();
+			id_stack.pop_back();
+			token_seq_pos += 3;
 			break;
 
 		case 32: // formal_parameter->punc_round_left parameter_list punc_round_right
+			token_seq_pos += 2;
 			break;
 
 		case 33: // formal_parameter->null
 			break;
 
 		case 34: // parameter_list->parameter_list punc_semicolon parameter
+			for (auto j : idList)
+			{
+				cout << "idList.data_type.basic_type=" << j.data_type.basic_type << endl;
+				paramList.push_back(j);
+			}
+			idList.clear();
+			token_seq_pos += 1;
 			break;
 
 		case 35: // parameter_list->parameter
+			for (auto j : idList)
+			{
+				cout << "idList.data_type.basic_type=" << j.data_type.basic_type << endl;
+				paramList.push_back(j);
+			}
+			idList.clear();
 			break;
 
 		case 36: // parameter->var_parameter
+			for (auto &j : idList)
+				j.data_type.param_type = _value;
 			break;
 
 		case 37: // parameter->value_parameter
+			for (auto &j : idList)
+				j.data_type.param_type = _reference;
 			break;
 
 		case 38: // var_parameter->var value_parameter
+			token_seq_pos += 1;
 			break;
 
 		case 39: // value_parameter->idlist punc_colon basic_type
+			cout << "temp.data_type.basic_type=" << temp.data_type.basic_type << endl;
+			temp = id_stack[id_stack.size() - 1];
+			for (auto &j : idList)
+			{
+				cout << "idList.data_type.basic_type=" << j.data_type.basic_type << endl;
+				j.data_type.basic_type = temp.data_type.basic_type;
+			}
+			id_stack.pop_back();
+			token_seq_pos += 1;
 			break;
 
 		case 40: // subprogram_body->const_declarations var_declarations compound_statement
@@ -315,7 +380,7 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 		case 44: // statement->variable assignop expression
 			if (id_stack[id_stack.size() - 1].data_type == id_stack[id_stack.size() - 2].data_type)
 			{
-				if (id_stack[id_stack.size() - 1].data_type.basic_type == _real & id_stack[id_stack.size() - 2].data_type.basic_type == _integer)
+				if (id_stack[id_stack.size() - 1].data_type.basic_type > id_stack[id_stack.size() - 2].data_type.basic_type)
 					encouter_an_error("different assignment types.", token_seq[token_seq_pos].line);
 			}
 			else
@@ -336,6 +401,7 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			{
 				encouter_an_error("not boolean type in if expression ", token_seq[token_seq_pos].line);
 			}
+			id_stack.pop_back();
 			token_seq_pos += 2;
 			break;
 
@@ -347,6 +413,8 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			}
 			if (id_stack[id_stack.size() - 1].data_type.basic_type != _integer || id_stack[id_stack.size() - 2].data_type.basic_type != _integer)
 			{
+				cout << "id_stack[id_stack.size() - 1].data_type.basic_type=" << id_stack[id_stack.size() - 1].data_type.basic_type << endl;
+				cout << "id_stack[id_stack.size() - 2].data_type.basic_type=" << id_stack[id_stack.size() - 2].data_type.basic_type << endl;
 				encouter_an_error("not integer type in for if expression ", token_seq[token_seq_pos].line);
 			}
 			id_stack.pop_back();
@@ -355,10 +423,12 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			break;
 
 		case 49: // statement->read punc_round_left variable_list punc_round_right
+			varList.clear();
 			token_seq_pos += 3;
 			break;
 
 		case 50: // statement->write punc_round_left expression_list punc_round_right
+			exprListStack.pop_back();
 			token_seq_pos += 3;
 			break;
 
@@ -366,9 +436,14 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			break;
 
 		case 52: // variable_list->variable_list punc_comma variable
+			varList.push_back(id_stack[id_stack.size() - 1]);
+			id_stack.pop_back();
+			token_seq_pos += 1;
 			break;
 
 		case 53: // variable_list->variable
+			varList.push_back(id_stack[id_stack.size() - 1]);
+			id_stack.pop_back();
 			break;
 
 		case 54: // variable->id id_varpart
@@ -404,7 +479,7 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			}
 			temp = temp1;
 			temp.data_type.dimension = exprListStack[exprListStack.size() - 1].size();
-			cout << "dim:"<<temp.data_type.dimension << endl;
+			cout << "dim:" << temp.data_type.dimension << endl;
 			exprListStack.pop_back();
 			id_stack.push_back(temp);
 			token_seq_pos += 2;
@@ -416,9 +491,45 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			break;
 
 		case 57: // procedure_call->id
+			temp = search_id(token_seq[token_seq_pos].content);
+			if (temp.id_type != _procedure && temp.id_type != _function)
+			{
+				encouter_an_error("A non function(procedure) identifier was incorrectly called", token_seq[token_seq_pos].line);
+			}
+			if (temp.param_list.size() != 0)
+			{
+				encouter_an_error("Wrong number of parameters ", token_seq[token_seq_pos].line);
+			}
+			token_seq_pos += 1;
 			break;
 
 		case 58: // procedure_call->id punc_round_left expression_list punc_round_right
+			temp = search_id(token_seq[token_seq_pos].content);
+			if (temp.id_type != _procedure && temp.id_type != _function)
+			{
+				encouter_an_error("A non function(procedure) identifier was incorrectly called", token_seq[token_seq_pos].line);
+			}
+			if (temp.param_list.size() != exprListStack[exprListStack.size() - 1].size())
+			{
+				encouter_an_error("Wrong number of parameters ", token_seq[token_seq_pos].line);
+			}
+			for (int j = 0; j < temp.param_list.size(); ++j)
+			{
+				if (temp.param_list[j].data_type == exprListStack[exprListStack.size() - 1][j].data_type)
+				{
+
+					if (temp.param_list[j].data_type.basic_type < exprListStack[exprListStack.size() - 1][j].data_type.basic_type)
+					{
+						cout << "temp.param_list[j].data_type.basic_type=" << temp.param_list[j].data_type.basic_type << endl;
+						cout << "exprListStack[exprListStack.size() - 1][j].data_type.basic_type=" << exprListStack[exprListStack.size() - 1][j].data_type.basic_type << endl;
+						encouter_an_error("Wrong parameter type1 ", token_seq[token_seq_pos].line);
+					}
+				}
+				else
+					encouter_an_error("Wrong parameter type2 ", token_seq[token_seq_pos].line);
+			}
+			exprListStack.pop_back();
+			token_seq_pos += 3;
 			break;
 
 		case 59: // else_part->else statement
@@ -524,6 +635,33 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 			break;
 
 		case 71: // factor->id punc_round_left expression_list punc_round_right
+			temp = search_id(token_seq[token_seq_pos].content);
+			if (temp.id_type != _function)
+			{
+				encouter_an_error("A non function identifier was incorrectly called", token_seq[token_seq_pos].line);
+			}
+			if (temp.param_list.size() != exprListStack[exprListStack.size() - 1].size())
+			{
+				encouter_an_error("Wrong number of parameters ", token_seq[token_seq_pos].line);
+			}
+			for (int j = 0; j < temp.param_list.size(); ++j)
+			{
+				if (temp.param_list[j].data_type == exprListStack[exprListStack.size() - 1][j].data_type)
+				{
+
+					if (temp.param_list[j].data_type.basic_type < exprListStack[exprListStack.size() - 1][j].data_type.basic_type)
+					{
+						encouter_an_error("Wrong parameter type", token_seq[token_seq_pos].line);
+					}
+				}
+				else
+					encouter_an_error("Wrong parameter type", token_seq[token_seq_pos].line);
+			}
+			exprListStack.pop_back();
+			temp = temp1;
+			temp.data_type = search_id(token_seq[token_seq_pos].content).return_value_data_type;
+			id_stack.push_back(temp);
+			token_seq_pos += 3;
 			break;
 
 		case 72: // factor->punc_round_left expression punc_round_right
@@ -635,13 +773,13 @@ void semantic_analysis(vector<int> &product_seq, vector<token> token_seq)
 		if (id_stack.size())
 			cout << id_stack.size() << ":" << (int)id_stack[id_stack.size() - 1].data_type.basic_type << "xxx" << endl;
 		else
-			cout << id_stack.size() << ":"  << "xxx" << endl;
-		cout << "exprListStackSize"<<exprListStack.size() << endl;
-		if(exprListStack.size())
-			cout << 'z'<<exprListStack[exprListStack.size()-1].size() << endl;
+			cout << id_stack.size() << ":"
+				 << "xxx" << endl;
+		cout << "exprListStackSize" << exprListStack.size() << endl;
+		if (exprListStack.size())
+			cout << 'z' << exprListStack[exprListStack.size() - 1].size() << endl;
 	}
 }
-
 int main()
 {
 	ifstream productIn;
@@ -664,7 +802,7 @@ int main()
 
 	vector<int> product_seq(control_program(LRtable, grammar, token_seq));
 
-	init_ID_Table();
+	init_id_table();
 
 	for (auto i : product_seq)
 		cout << i << endl;

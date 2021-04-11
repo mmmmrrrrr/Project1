@@ -1,8 +1,18 @@
-program testSeven(input, output);
+program testSix(input, output);
 var
-    a:array [1..10,1..5] of integer;
-    b:array [6..7,1..3] of integer;
+	i, j, tmp, size: integer;
+	list:array[0..1000] of integer;
 begin
-    b[0,b[0,1.1]]:=1;
+    for i := 1 to size-1 do
+	for j := 1 to i do
+	    if list[j] > list[j+1] then
+	    begin
+		    tmp := list[j]];
+		    list[j] := list[j+1];
+		    list [[j+1] := tmp;
+	    end;
+
+    for i :=1 to size do
+	write(list[i])
 end.
 
