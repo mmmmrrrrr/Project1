@@ -47,31 +47,70 @@ struct Id_Table
 } * now_id_table;
 ```
 
-- 标识符
+- 标识符**Id**
 
+| 属性        | 类型                    | 含义       |
+| ----------- | ----------------------- | ---------- |
+| name        | string                  | 标识符名字 |
+| dataType    | DataType                | 数据类型   |
+| idType      | IdType                  | 标识符类型 |
+| paramList   | vector\<Param>paramList | 参数列表   |
+| retDataType | DataType                | 返回值类型 |
+| isError     | bool                    | 是否有错误 |
 
-``` c++
-struct Id
-{
-	string name;
-	Data_Type data_type;
-	Id_Type id_type;
-	vector<Param> param_list; 
-	Data_Type return_value_data_type; 
-	bool is_error;					  
-} error_id, temp1;
-```
+- 参数(**Param**)
 
- 
+  | 属性     | 类型     | 含义       |
+  | -------- | -------- | ---------- |
+  | name     | string   | 标识符名字 |
+  | dataType | DataType | 数据类型   |
 
-|    属性    |    含义    |
-| :--------: | :--------: |
-|    name    | 标识符名字 |
-| data_type  |  数据类型  |
-|  id_type   | 标识符类型 |
-| param_list |  参数列表  |
-|  retDatat  | 返回值类型 |
-|  is_error  | 是否有错误 |
+- 数据类型(**DataType**)
+
+  | 属性       | 类型        | 含义           |
+  | ---------- | ----------- | -------------- |
+  | basicType  | BasicType   | 基础数据类型   |
+  | constVal   | int         | 整数型常量数值 |
+  | dimension  | int         | 数组维度       |
+  | upperBound | vector<int> | 数组上限       |
+  | lowerBound | vector<int> | 数组下限       |
+  | paramType  | ParamType   | 参数类型       |
+
+- 枚举类型 **BasicType** 
+
+  ```c++
+  enum BasicType : int
+  {
+  	_integer = 1,
+  	_real,
+  	_boolean,
+  	_char,
+  };	
+  ```
+
+  对应四种支持的数据类型
+
+- 枚举类型 **ParamType**
+  
+  ```c++
+  enum ParamType : int
+  {
+	_reference = 1,
+	_value
+  };
+  ```
+
+- 枚举类型 **IdType**
+  ```c++
+  enum IdType : int
+  {
+	  _constant = 1,
+	  _variable,
+	  _procedure,
+	  _function
+  };
+  ```
+
 
 
 ### 标识符类型(ID)
@@ -105,7 +144,6 @@ struct Id
 对于识别到的错误，程序会在错误信息表中记录错误的类型以及所在行的行号。
 
 - 作用域检查
-
   查找标识符如果失败，则为标识符未定义错误。
 
 - 赋值语句
