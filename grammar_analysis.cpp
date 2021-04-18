@@ -832,25 +832,41 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 	vector<token> tokens; //�ʷ����������ļǺ�������
 
 	/*----------------------Ҫ�ĳɴʷ����������ļ���λ��---------------------*/
-	token_file.open("C:\\acm\\coding\\Project1\\lexOut.txt");
-	int n = 0;
+	ifstream infile;
+	infile.open("lexOut.txt");
+	
 	token tem;
-	while (token_file >> buffer) //��ȡ�Ǻ���
+
+	char buf[100];
+	while (infile.getline(buf, sizeof(buf)) && buf[0]) //buf[0]Ϊ�������һ������
 	{
-		if (n == 0)
+		int p = 0;
+		string t = "";
+		int n = 0;  //ʶ�𵽼����ո�
+
+		while (buf[p] != '\0')
 		{
-			tem.mark = stoi(buffer);
+			if (buf[p] == ' ' && n < 2)
+			{
+				if (n == 0)
+				{
+					tem.mark = stoi(t);
+				}
+				else if (n == 1)
+				{
+					tem.line = stoi(t);
+				}
+				t = "";
+				n++;
+			}
+			else
+			{
+				t += buf[p];
+			}
+			p++;
 		}
-		else if (n == 1)
-		{
-			tem.line = stoi(buffer);
-		}
-		else
-		{
-			tem.content = buffer;
-			tokens.push_back(tem);
-		}
-		n = (n + 1) % 3;
+		tem.content = t;
+		tokens.push_back(tem);
 	}
 	tem.mark = 0;
 	tem.content = "$";
@@ -903,7 +919,6 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 				else
 				{
 					cout << "Failed! there're some errors." << endl;
-					exit(0);
 				}
 				reduces.push_back(0);
 				break;
@@ -952,7 +967,6 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 			if (now_mark == EOF_)
 			{
 				cout << "Failed! something is missing." << endl;
-				exit(0);
 				break;
 			}
 				

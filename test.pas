@@ -1,18 +1,13 @@
-program testSix(input, output);
+program example;
+const
+   c=' ';
 var
-	i, j, tmp, size: integer;
-	list:array[0..1000] of integer;
+   a,b:real;
+function MyFunction(a:real):real;
 begin
-    for i := 1 to size-1 do
-	for j := 1 to i do
-	    if list[j] > list[j+1] then
-	    begin
-		    tmp := list[j]];
-		    list[j] := list[j+1];
-		    list [[j+1] := tmp;
-	    end;
-
-    for i :=1 to size do
-	write(list[i])
+   a:=1;
+end;
+begin
+   b:=MyFunction(b)+a>1;
+   write(c);
 end.
-
