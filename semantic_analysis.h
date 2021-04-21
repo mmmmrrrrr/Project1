@@ -60,7 +60,7 @@ struct Error_Information
 	string error_type;
 }; //记录错误信息作为返回值
 
-void reportError(string error_information, int line);
+void reportError(string errInformation, token t);
 Id searchId(string name); //根据名字进行查找，返回标识符信息
 bool insertId(Id id);	  //插入标识符到当前位置
 void location();
