@@ -1,7 +1,17 @@
 #include "grammar_analysis.h"
 #include "semantic_analysis.h"
+#include "FlexLexer.h"
 int main()
 {
+	ifstream ifile("test.pas");
+	ofstream ofile("lexOut.txt");
+	yyFlexLexer yy;
+	yy.switch_streams(ifile, ofile);
+	printf("[I]>>>Read data from file:test.pas\n");
+	yy.yylex();
+	ifile.close();
+	ofile.close();
+	yy.yylex();
 	ifstream productIn;
 	productIn.open("C:\\acm\\coding\\Project1\\production_sequence.pas");
 	map<int, string> numToProduct;
@@ -31,7 +41,7 @@ int main()
 	for (auto i : token_seq)
 		cout << i.content << endl;
 
-	semantic_analysis(product_seq, token_seq,numToProduct);
+	semantic_analysis(product_seq, token_seq, numToProduct);
 	cout << "Success!!" << endl;
 	return 0;
 }

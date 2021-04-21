@@ -10,7 +10,7 @@ enum BasicType : int
 	_real,
 	_boolean,
 	_char,
-};
+};	
 enum ParamType : int
 {
 	_reference = 1,

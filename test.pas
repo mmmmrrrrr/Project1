@@ -6,8 +6,7 @@ var
 function MyFunction(a:real):real;
 begin
    a:=1;
-end;
+end
 begin
-   b:=MyFunction(b)+a>1;
-   write(c);
+   b:=MyFunction(b)+a;
 end.

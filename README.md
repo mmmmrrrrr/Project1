@@ -99,6 +99,7 @@ struct Id_Table
 	_value
   };
   ```
+  对应引用参数，传值参数
 
 - 枚举类型 **IdType**
   ```c++
@@ -110,16 +111,21 @@ struct Id_Table
 	  _function
   };
   ```
+  对应5种标识符类型
 
+## 4.总体设计
 
+### 3) 语义分析
 
-### 标识符类型(ID)
+#### a) 接口描述
 
+输入： 语法分析生成的依照SLR分析归约顺序的产生式序列和记号序列。
 
-- 常量($constant$)
-- 变量($variable$)
-- 过程($procedure$)
-- 函数
+输出： 供代码生成的符号表，
+
+#### b) 功能描述
+
+##### 
 
 ### 支持操作
 
@@ -158,29 +164,6 @@ struct Id_Table
 
   该运算符无法以对给定类型执行运算，如$x\ mod\ real$.
 
-## 代码生成
-
-使用S属性定义的语法制导翻译技术进行自顶向下的代码生成
-
-对于每个文法符号定义一个string类型的属性值，用于记录代码。
-
-### 类型对应
-
-- $integer \to short$
-
-- $real \to float$
-
-- $boolean \to bool$
-
-- $char \to char$ 
-
-  ### 关键字对应
-
-- $program$ 无实际对应转换
-
-- $function$ 对应函数
-
-- $procedure$ 对应返回值为void的函数
 
 
 

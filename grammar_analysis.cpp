@@ -1,4 +1,5 @@
 #include "grammar_analysis.h"
+#include "FlexLexer.h"
 #include <fstream>
 #include <string>
 
@@ -866,6 +867,7 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 			p++;
 		}
 		tem.content = t;
+		cout<<t<<' ';
 		tokens.push_back(tem);
 	}
 	tem.mark = 0;
