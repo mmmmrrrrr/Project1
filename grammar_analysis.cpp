@@ -1,5 +1,4 @@
 #include "grammar_analysis.h"
-#include "FlexLexer.h"
 #include <fstream>
 #include <string>
 
@@ -538,7 +537,6 @@ fset getFOLLOW(Grammar grammar, fset first)
 	//for (auto iter = follow.begin(); iter != follow.end(); ++iter)
 	//{
 	//	set<mark> value = iter->second;
-
 	//	cout << mark_words[iter->first] << " : ";
 	//	for (auto it = value.begin(); it != value.end(); it++)
 	//	{
@@ -709,11 +707,7 @@ LR_PredictTable getTable(Grammar grammar)    //����LR������
 	for (int i = 0; i < DFA.size(); i++)
 		LRtable.push_back(tem);
 
-	//�����ƽ���
-	for (int i = 0; i < go.size(); i++)
-	{
-		LRtable[go[i].from][go[i].by] = go[i].to;
-	}
+
 
 	//�����Լ��
 	for (int i = 0; i < DFA.size(); i++)
@@ -743,6 +737,12 @@ LR_PredictTable getTable(Grammar grammar)    //����LR������
 			}
 		}
 
+	}
+
+	//�����ƽ���
+	for (int i = 0; i < go.size(); i++)
+	{
+		LRtable[go[i].from][go[i].by] = go[i].to;
 	}
 
 	//��ӡԤ�������
@@ -890,10 +890,15 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 		int now_line = tokens[i].line;
 		string now_content = tokens[i].content;
 
+		if (now_line == 6)
+			int aaa=0;
+
 		if (now_mark == -1)  //�ʷ�����ʶ�𵽵Ĵ���
 		{
-			cout << "line " << now_line << " :\t";
-			cout << now_content << "Ϊ�Ƿ��Ǻ�" << endl;
+			cout << "Lexical error:\t";
+			cout << "<line " << now_line << ">\t";
+			cout << "\"" << now_content << "\"\t";
+			cout << "This is an illegal mark." << endl;
 			continue;
 		}
 
@@ -915,11 +920,11 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 			{
 				if (no_error)
 				{
-					cout << "Success��" << endl;
+					cout << "Syntax analysis Success��" << endl;
 				}
 				else
 				{
-					cout << "Failed! there're some errors." << endl;
+					cout << "Syntax analysis Failed! " << endl;
 				}
 				reduces.push_back(0);
 				break;
@@ -967,21 +972,22 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 
 			if (now_mark == EOF_)
 			{
-				cout << "Failed! something is missing." << endl;
+				cout << "Syntax analysis Failed! " << endl;
 				break;
 			}
-				
-			cout << "line " << now_line << " :\t";
+			
+			cout << "Syntax error:\t";
+			cout << "<line " << now_line << ">\t";
+			cout << "\"" << now_content << "\"\t";
 			if (now_mark == id)
-				cout << now_content << "�������ȱʧ" << endl;
+				cout << "This id is redundant or a symbol is missing nearby." << endl;
 			else if (now_mark == mulop_div || now_mark == mulop_mod || now_mark == punc_semicolon || now_mark == assignop ||
 				now_mark == mulop_mul || now_mark == mulop_divide || now_mark == addop_add || now_mark == addop_sub)
-				cout << now_content << "�������ȱʧ " << endl;
+				cout << "This symbol is redundant or an operand is missing nearby." << endl;
 			else if (now_mark == punc_square_left || now_mark == punc_square_right || now_mark == punc_round_left || now_mark == punc_round_right)
-				cout << now_content << "���Ų�ƥ��" << endl;
+				cout << "Parenthesis mismatch." << endl;
 			else
-				cout << now_content << "����ȱ��ĳ���Ǻ�" <<endl;
-
+				cout << "This mark is redundant" << endl;
 		}
 
 	}

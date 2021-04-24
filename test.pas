@@ -4,6 +4,6 @@ var
     c:char;
     d:boolean;
  begin
-    write(a,b,c);
+    write(a+b>c,b,c);
     write(d);
  end.
