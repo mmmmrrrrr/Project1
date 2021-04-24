@@ -5,6 +5,28 @@ vector<Id> idList,paramList,varList;
 vector<vector<Id>> exprListStack;
 Id errorId, temp1;
 IdTable *nowIdTable;
+
+queue<Id>constRecord;
+queue<vector<Id>>rlistRecord;
+queue<vector<Id>>wlistRecord;
+
+Id getConst(){
+	temp1=constRecord.front();
+	constRecord.pop();
+	return temp1;
+}
+
+vector<Id> getRlist(){
+	vector<Id> t(rlistRecord.front());
+	rlistRecord.pop();
+	return t;
+}
+vector<Id> getWlist(){
+	vector<Id> t(wlistRecord.front());
+	wlistRecord.pop();
+	return t;
+}
+
 void reportError(string errInformation, token t)
 {
 	cout << "Syntax error:"<<"    <line "<<t.line<<">    \""<<t.content<<"\"    "<<errInformation;
@@ -32,8 +54,8 @@ Id searchId(string name)
 } //根据名字进行查找，返回标识符信息
 bool insert_id(Id id)
 {
-	cout << "id.dim" << id.dataType.dimension << endl;
-	cout << id.isError << endl;
+	//cout << "id.dim" << id.dataType.dimension << endl;
+	//cout << id.isError << endl;
 	if (nowIdTable->nameToId.find(id.name) != nowIdTable->nameToId.end())
 		return 0;
 	nowIdTable->nameToId[id.name] = id;
@@ -123,6 +145,7 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 				reportError("repeated definition", token_seq[token_seq_pos]);
 				return;
 			}
+			constRecord.push(idStack[idStack.size()-1]);
 			idStack.pop_back();
 			token_seq_pos += 3;
 			break;
@@ -134,6 +157,7 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 				reportError("repeated definition", token_seq[token_seq_pos]);
 				return;
 			}
+			constRecord.push(idStack[idStack.size()-1]);
 			idStack.pop_back();
 
 			token_seq_pos += 2;
@@ -284,7 +308,7 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 			temp.name = token_seq[token_seq_pos + 1].content;
 			for (auto j : paramList)
 			{
-				cout << "j.dataType.basicType=" << j.dataType.basicType << endl;
+				//cout << "j.dataType.basicType=" << j.dataType.basicType << endl;
 				temp.paramList.push_back({j.name, j.dataType});
 			}
 			insert_id(temp);
@@ -329,7 +353,7 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 		case 34: // parameter_list->parameter_list punc_semicolon parameter
 			for (auto j : idList)
 			{
-				cout << "idList.dataType.basicType=" << j.dataType.basicType << endl;
+				//cout << "idList.dataType.basicType=" << j.dataType.basicType << endl;
 				paramList.push_back(j);
 			}
 			idList.clear();
@@ -339,7 +363,7 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 		case 35: // parameter_list->parameter
 			for (auto j : idList)
 			{
-				cout << "idList.dataType.basicType=" << j.dataType.basicType << endl;
+				//cout << "idList.dataType.basicType=" << j.dataType.basicType << endl;
 				paramList.push_back(j);
 			}
 			idList.clear();
@@ -360,11 +384,11 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 			break;
 
 		case 39: // value_parameter->idlist punc_colon basic_type
-			cout << "temp.dataType.basicType=" << temp.dataType.basicType << endl;
+			//cout << "temp.dataType.basicType=" << temp.dataType.basicType << endl;
 			temp = idStack[idStack.size() - 1];
 			for (auto &j : idList)
 			{
-				cout << "idList.dataType.basicType=" << j.dataType.basicType << endl;
+				//cout << "idList.dataType.basicType=" << j.dataType.basicType << endl;
 				j.dataType.basicType = temp.dataType.basicType;
 			}
 			idStack.pop_back();
@@ -421,8 +445,8 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 			}
 			if (idStack[idStack.size() - 1].dataType.basicType != _integer || idStack[idStack.size() - 2].dataType.basicType != _integer)
 			{
-				cout << "idStack[idStack.size() - 1].dataType.basicType=" << idStack[idStack.size() - 1].dataType.basicType << endl;
-				cout << "idStack[idStack.size() - 2].dataType.basicType=" << idStack[idStack.size() - 2].dataType.basicType << endl;
+				//cout << "idStack[idStack.size() - 1].dataType.basicType=" << idStack[idStack.size() - 1].dataType.basicType << endl;
+				//cout << "idStack[idStack.size() - 2].dataType.basicType=" << idStack[idStack.size() - 2].dataType.basicType << endl;
 				reportError("not integer type in for if expression ", token_seq[token_seq_pos]);
 			}
 			idStack.pop_back();
@@ -431,11 +455,14 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 			break;
 
 		case 49: // statement->read punc_round_left variable_list punc_round_right
+			//cout<<"varList.size()="<<varList.size()<<endl;
+			rlistRecord.push(varList);
 			varList.clear();
 			token_seq_pos += 3;
 			break;
 
 		case 50: // statement->write punc_round_left expression_list punc_round_right
+			wlistRecord.push(exprListStack[exprListStack.size()-1]);
 			exprListStack.pop_back();
 			token_seq_pos += 3;
 			break;
@@ -444,12 +471,15 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 			break;
 
 		case 52: // variable_list->variable_list punc_comma variable
+			//cout<<"varList push"<<endl;
 			varList.push_back(idStack[idStack.size() - 1]);
+			//cout<<"varList.size()="<<varList.size()<<endl;
 			idStack.pop_back();
 			token_seq_pos += 1;
 			break;
 
 		case 53: // variable_list->variable
+			//cout<<"varList push"<<endl;
 			varList.push_back(idStack[idStack.size() - 1]);
 			idStack.pop_back();
 			break;
@@ -457,11 +487,11 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 		case 54: // variable->id id_varpart
 
 			idStack[idStack.size() - 1].name = token_seq[token_seq_pos].content;
-			cout << "---" << token_seq[token_seq_pos].content << endl;
+			//cout << "---" << token_seq[token_seq_pos].content << endl;
 
 			temp = searchId(idStack[idStack.size() - 1].name);
-			cout << "yyy" << temp.dataType.basicType << endl;
-			cout << temp.isError << endl;
+			//cout << "yyy" << temp.dataType.basicType << endl;
+			//cout << temp.isError << endl;
 			if (temp.isError)
 			{
 				reportError("use undefined variable.", token_seq[token_seq_pos]);
@@ -472,7 +502,7 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 			}*/
 			if (temp.dataType.dimension != idStack[idStack.size() - 1].dataType.dimension)
 			{
-				cout << temp.dataType.dimension << ' ' << idStack[idStack.size() - 1].dataType.dimension << endl;
+				//cout << temp.dataType.dimension << ' ' << idStack[idStack.size() - 1].dataType.dimension << endl;
 				reportError("use array error.", token_seq[token_seq_pos]);
 			}
 			idStack[idStack.size() - 1] = temp;
@@ -487,7 +517,7 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 			}
 			temp = temp1;
 			temp.dataType.dimension = exprListStack[exprListStack.size() - 1].size();
-			cout << "dim:" << temp.dataType.dimension << endl;
+			//cout << "dim:" << temp.dataType.dimension << endl;
 			exprListStack.pop_back();
 			idStack.push_back(temp);
 			token_seq_pos += 2;
@@ -528,8 +558,8 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 
 					if (temp.paramList[j].dataType.basicType < exprListStack[exprListStack.size() - 1][j].dataType.basicType)
 					{
-						cout << "temp.paramList[j].dataType.basicType=" << temp.paramList[j].dataType.basicType << endl;
-						cout << "exprListStack[exprListStack.size() - 1][j].dataType.basicType=" << exprListStack[exprListStack.size() - 1][j].dataType.basicType << endl;
+						//cout << "temp.paramList[j].dataType.basicType=" << temp.paramList[j].dataType.basicType << endl;
+						//cout << "exprListStack[exprListStack.size() - 1][j].dataType.basicType=" << exprListStack[exprListStack.size() - 1][j].dataType.basicType << endl;
 						reportError("Wrong parameter type1 ", token_seq[token_seq_pos]);
 					}
 				}
@@ -785,8 +815,9 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 				 << "xxx" << endl;
 		cout << "exprListStackSize" << exprListStack.size() << endl;
 		if (exprListStack.size())
-			cout << 'z' << exprListStack[exprListStack.size() - 1].size() << endl;
+			cout << "exprList.size()=" << exprListStack[exprListStack.size() - 1].size() << endl;
 	}
+	//cout<<"RList.size()="<<rlistRecord.size()<<endl;
 }
 /*
 int main()

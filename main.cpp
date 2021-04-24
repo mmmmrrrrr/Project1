@@ -43,5 +43,13 @@ int main()
 
 	semantic_analysis(product_seq, token_seq, numToProduct);
 	cout << "Success!!" << endl;
+	for(int i=1;i<=2;++i){
+		vector<Id> t(getWlist());
+		cout<<"wlist["<<i<<"].size()="<<t.size()<<endl;
+		for(auto j:t)
+			cout<<j.dataType.basicType<<' ';
+		cout<<endl;
+	}
+	cout<<endl;
 	return 0;
 }

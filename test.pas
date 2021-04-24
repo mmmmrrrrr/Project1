@@ -1,10 +1,9 @@
 program test(input,output);
- var a:integer;
- procedure pro;
+var
+    a,b:integer;
+    c:char;
+    d:boolean;
  begin
- a:=1;
- end;
- begin
- a:=pro;
- writeln(a);
+    write(a,b,c);
+    write(d);
  end.

@@ -67,4 +67,8 @@ void location();
 void relocation();
 void initIdTable();
 void semantic_analysis(const vector<int> &product_sequence, const vector<token> &token_sequence, map<int,string> &numToProduct);
+
+Id getConst();
+vector<Id> getRlist();
+vector<Id> getWlist();
 #endif
