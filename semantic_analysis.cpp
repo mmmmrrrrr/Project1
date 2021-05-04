@@ -1,27 +1,30 @@
 #include "semantic_analysis.h"
 vector<string> opStack;
 vector<Id> idStack;
-vector<Id> idList,paramList,varList;
+vector<Id> idList, paramList, varList;
 vector<vector<Id>> exprListStack;
 Id errorId, temp1;
 IdTable *nowIdTable;
 
-queue<Id>constRecord;
-queue<vector<Id>>rlistRecord;
-queue<vector<Id>>wlistRecord;
+queue<Id> constRecord;
+queue<vector<Id>> rlistRecord;
+queue<vector<Id>> wlistRecord;
 
-Id getConst(){
-	temp1=constRecord.front();
+Id getConst()
+{
+	temp1 = constRecord.front();
 	constRecord.pop();
 	return temp1;
 }
 
-vector<Id> getRlist(){
+vector<Id> getRlist()
+{
 	vector<Id> t(rlistRecord.front());
 	rlistRecord.pop();
 	return t;
 }
-vector<Id> getWlist(){
+vector<Id> getWlist()
+{
 	vector<Id> t(wlistRecord.front());
 	wlistRecord.pop();
 	return t;
@@ -29,12 +32,13 @@ vector<Id> getWlist(){
 
 void reportError(string errInformation, token t)
 {
-	cout << "Syntax error:"<<"    <line "<<t.line<<">    \""<<t.content<<"\"    "<<errInformation;
+	cout << "Syntax error:"
+		 << "    <line " << t.line << ">    \"" << t.content << "\"    " << errInformation;
 	exit(0);
 }
 bool DataType::operator==(const DataType &t) const
 {
-	if(! t.basicType ||!basicType)
+	if (!t.basicType || !basicType)
 		return 0;
 	if (t.basicType == basicType)
 		return 1;
@@ -78,7 +82,7 @@ void initIdTable()
 	errorId.isError = 1;
 	location();
 }
-void semantic_analysis(const vector<int> &product_seq, const vector<token> &token_seq, map<int,string> &numToProduct)
+void semantic_analysis(const vector<int> &product_seq, const vector<token> &token_seq, map<int, string> &numToProduct)
 {
 	Id temp;
 	int token_seq_pos = 0, mi, mx;
@@ -145,7 +149,7 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 				reportError("repeated definition", token_seq[token_seq_pos]);
 				return;
 			}
-			constRecord.push(idStack[idStack.size()-1]);
+			constRecord.push(idStack[idStack.size() - 1]);
 			idStack.pop_back();
 			token_seq_pos += 3;
 			break;
@@ -157,7 +161,7 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 				reportError("repeated definition", token_seq[token_seq_pos]);
 				return;
 			}
-			constRecord.push(idStack[idStack.size()-1]);
+			constRecord.push(idStack[idStack.size() - 1]);
 			idStack.pop_back();
 
 			token_seq_pos += 2;
@@ -462,7 +466,7 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 			break;
 
 		case 50: // statement->write punc_round_left expression_list punc_round_right
-			wlistRecord.push(exprListStack[exprListStack.size()-1]);
+			wlistRecord.push(exprListStack[exprListStack.size() - 1]);
 			exprListStack.pop_back();
 			token_seq_pos += 3;
 			break;
@@ -505,8 +509,9 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 				//cout << temp.dataType.dimension << ' ' << idStack[idStack.size() - 1].dataType.dimension << endl;
 				reportError("use array error.", token_seq[token_seq_pos]);
 			}
-			if(temp.idType==_constant){
-				reportError("constant in assignment",token_seq[token_seq_pos]);
+			if (temp.idType == _constant)
+			{
+				reportError("constant in assignment", token_seq[token_seq_pos]);
 			}
 			idStack[idStack.size() - 1] = temp;
 			token_seq_pos += 1;
