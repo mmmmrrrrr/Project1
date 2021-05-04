@@ -6,26 +6,57 @@
 #include<cstring>
 #pragma execution_character_set("utf-8")
 
+int token_seq_pos1;
 
-int token_seq_pos1; 
 
-string  id_type(string s){
-	int i=0;
-	int flag=0;
-	if (s == "true") return "bool";
-	if (s == "flase" ) return "bool";
-	if (s[0] == '\'') return "char";
-	for (; i < s.length(); i++) {
-		if (s[i] < '0' || s[i]>'9')
-			flag = 1;
-		else
+void getTokenSeqPos1(int val){
+	token_seq_pos1 = val;
+}
+
+bool isInt(string str)
+{
+	bool isNum = false;
+
+	int index = 0;
+	for (; str[index] != '\0'; index++)
+	{
+		switch (str[index])
 		{
-			flag = 0;
+		case '0':case'1':case'2':case'3':case'4':case'5':
+		case'6':case'7':case'8':case'9':
+			isNum = true;
 			break;
+		case '-':case '+':
+			if (index != 0)
+			{
+				return false;
+			}
+			break;
+		default:
+			return false;
 		}
 	}
-	if (flag == 1) return "short";
-	else return "double";
+
+	if (!isNum)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+string  id_type(string s) {
+	int i = 0;
+	if (s == "true") return "bool";
+	if (s == "flase") return "bool";
+	if (s[0] == '\'') return "char";
+	for (; i < s.length(); i++) {
+		bool flag;
+		flag = isInt(s);
+		if (flag == true) return "short";
+		else return "double";
+	}
+	return "";
 }
 
 string idtoType(Id name_to_id)//�ҵ������ڷ��ű��ж�Ӧ������
@@ -251,7 +282,7 @@ int calculate(int num)
 }
 
 
-string generateCode(vector<int>& product_seq, vector<token>& token_seq, int token_seq_pos1)
+string generateCode(vector<int>& product_seq, vector<token>& token_seq,int token_seq_pos1)
 {
 	int s = -1;
 	string res = "";
@@ -271,35 +302,39 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 	switch (s)
 	{
 	case 0://S->programstruct
-		return generateCode(product_seq, token_seq, token_seq_pos1);
+		return generateCode(product_seq,token_seq,token_seq_pos1);
 	case 1:
 		//1:programStruct->program_head ; program_body .
 		//cout << "token_seq_pos1 = " << token_seq_pos1 << endl;
 		res = "#include <stdio.h>\n\n" +
-			generateCode(product_seq, token_seq, token_seq_pos1) + "" +
-			generateCode(product_seq, token_seq, token_seq_pos1);
+			generateCode(product_seq,token_seq,token_seq_pos1) + "" +
+			generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 2://program_head->program id (idlist)
 		token_seq[token_seq_pos1 + 2].content;
 		//cout << "token_seq_pos1 = " << token_seq_pos1 << endl;
 		//cout << token_seq[token_seq_pos1 + 2].content << endl;
-		generateCode(product_seq, token_seq, token_seq_pos1);
+		generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 	case 3:// program_head->program id
+		if(token_seq_pos1+2>=token_seq.size()){
+			cout << "error check too big pos in token_seq" << endl;
+			exit(1);
+		}
 		res = token_seq[token_seq_pos1 + 2].content;
 		return res;
 
 	case 4://program_body->const_declarations var_declarations subprogram_declarations compound_statement
-		res = generateCode(product_seq, token_seq, token_seq_pos1) +
-			generateCode(product_seq, token_seq, token_seq_pos1) +
-			generateCode(product_seq, token_seq, token_seq_pos1) + "int main()\n{\n" +
-			generateCode(product_seq, token_seq, token_seq_pos1) + "return 0;\n}";
+		res = generateCode(product_seq,token_seq,token_seq_pos1) +
+			generateCode(product_seq,token_seq,token_seq_pos1) +
+			generateCode(product_seq,token_seq,token_seq_pos1) + "int main()\n{\n" +
+			generateCode(product_seq,token_seq,token_seq_pos1) + "return 0;\n}";
 		return res;
 
 	case 5://idlist->idlist , id
 		res = token_seq[token_seq_pos1 + 2].content;
-		res = generateCode(product_seq, token_seq, token_seq_pos1) + "," + res;
+		res = generateCode(product_seq,token_seq,token_seq_pos1) + "," + res;
 		return res;
 
 	case 6://idlist->id
@@ -307,7 +342,7 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		return res;
 
 	case 7://const_declarations->const const_declaration ;
-		res = generateCode(product_seq, token_seq, token_seq_pos1);
+		res = generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 8://const_declarations->null
@@ -318,42 +353,42 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		//res = "const " + idtoType(res, res_id_table,name_to_id) + " " + res;
 		//res += "=" + generateCode(product_seq, token_seq, token_seq_pos1,get_rlist,get_wlist, res_id_table, name_to_id)+";\n";
 		//res = generateCode(product_seq, token_seq, token_seq_pos1,get_rlist,get_wlist, res_id_table, name_to_id) + res;
-		sa = generateCode(product_seq, token_seq, token_seq_pos1);
-		sb = generateCode(product_seq, token_seq, token_seq_pos1);
+		sa = generateCode(product_seq,token_seq,token_seq_pos1);
+		sb = generateCode(product_seq,token_seq,token_seq_pos1);
 		idtype = id_type(sa);
 		res = sb + "const " + idtype + " " + res + "=" + sa + ";\n";
 		return res;
 
 	case 10: //25:const_declaration->id = const_value
 		res = token_seq[token_seq_pos1 + 1].content;
-		sb = generateCode(product_seq, token_seq, token_seq_pos1);
+		sb = generateCode(product_seq,token_seq,token_seq_pos1);
 		idtype = id_type(sb);
 		res = "const " + idtype + " " + res +"=" + sb + ";\n";
 		return res;
 
 	case 11://const_value->addop_add num
-		return "+" + generateCode(product_seq, token_seq, token_seq_pos1);
+		return "+" + generateCode(product_seq,token_seq,token_seq_pos1);
 
 	case 12://const_value->addop_sub num
-		return "-" + generateCode(product_seq, token_seq, token_seq_pos1);
+		return "-" + generateCode(product_seq,token_seq,token_seq_pos1);
 
 	case 13://const_value->num
-		return generateCode(product_seq, token_seq, token_seq_pos1);
+		return generateCode(product_seq,token_seq,token_seq_pos1);
 
 	case 14://const_value->letter
 		res = token_seq[token_seq_pos1 + 1].content ;
 		return res;
 
 	case 15://var_declarations->var var_declaration punc_semicolon
-		res = generateCode(product_seq, token_seq, token_seq_pos1);
+		res = generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 16://var_declarations->null
 		return "";
 
 	case 17://var_declaration->var_declaration punc_semicolon idlist punc_colon type
-		sb = generateCode(product_seq, token_seq, token_seq_pos1); //type
-		sa = generateCode(product_seq, token_seq, token_seq_pos1);
+		sb = generateCode(product_seq,token_seq,token_seq_pos1); //type
+		sa = generateCode(product_seq,token_seq,token_seq_pos1);
 		if (sb.find('[') == string::npos)
 		{
 			res = sb + " " + sa + ";\n";
@@ -365,12 +400,12 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 				res += replaceString(sb, ' ', " " + s) + ";\n";
 			}
 		}
-		res = generateCode(product_seq, token_seq, token_seq_pos1) + res; //var+declaration
+		res = generateCode(product_seq,token_seq,token_seq_pos1) + res; //var+declaration
 		return res;
 
 	case 18://var_declaration->idlist punc_colon type
-		sb = generateCode(product_seq, token_seq, token_seq_pos1); //type
-		sa = generateCode(product_seq, token_seq, token_seq_pos1);
+		sb = generateCode(product_seq,token_seq,token_seq_pos1); //type
+		sa = generateCode(product_seq,token_seq,token_seq_pos1);
 		if (sb.find('[') == string::npos)
 		{
 			res = sb + " " + sa + ";\n";
@@ -385,11 +420,11 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		return res;
 
 	case 19://type->basic_type
-		return generateCode(product_seq, token_seq, token_seq_pos1);
+		return generateCode(product_seq,token_seq,token_seq_pos1);
 
 	case 20://type->array punc_square_left period punc_square_right of basic_type
-		res = generateCode(product_seq, token_seq, token_seq_pos1);
-		res += " [" + generateCode(product_seq, token_seq, token_seq_pos1) + "]";
+		res = generateCode(product_seq,token_seq,token_seq_pos1);
+		res += " [" + generateCode(product_seq,token_seq,token_seq_pos1) + "]";
 		return res;
 
 	case 21://basic_type->integer
@@ -407,7 +442,7 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 	case 25://period->period punc_comma digits punc_point punc_point digits
 		a = atoi(token_seq[token_seq_pos1 + 2].content.c_str());
 		b = atoi(token_seq[token_seq_pos1 + 5].content.c_str());
-		res = generateCode(product_seq, token_seq, token_seq_pos1) + "][" + std::to_string(b - a + 1);
+		res = generateCode(product_seq,token_seq,token_seq_pos1) + "][" + std::to_string(b - a + 1);
 		return res;
 
 	case 26://period->digits punc_point punc_point digits
@@ -416,16 +451,16 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		return std::to_string(b - a + 1);
 
 	case 27://subprogram_declarations->subprogram_declarations subprogram punc_semicolon
-		res = generateCode(product_seq, token_seq, token_seq_pos1) +
-			generateCode(product_seq, token_seq, token_seq_pos1);
+		res = generateCode(product_seq,token_seq,token_seq_pos1) +
+			generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 28://subprogram_declarations->null
 		return "";
 
 	case 29://subprogram->subprogram_head punc_semicolon subprogram_body
-		res = generateCode(product_seq, token_seq, token_seq_pos1) + "" +
-			generateCode(product_seq, token_seq, token_seq_pos1) + "";
+		res = generateCode(product_seq,token_seq,token_seq_pos1) + "" +
+			generateCode(product_seq,token_seq,token_seq_pos1) + "";
 		if (res.substr(0, 4) != "void")
 		{
 			sb = splitString(splitString(res, ' ')[1], '(')[0] + "=";
@@ -440,93 +475,93 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		res = "void " + token_seq[token_seq_pos1 + 2].content;
 		//cout << "token_seq_pos1 = " << token_seq_pos1 << endl;
 		//cout << "id=" << token_seq[token_seq_pos1 + 2].content << endl;
-		res += generateCode(product_seq, token_seq, token_seq_pos1);
+		res += generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 31:// subprogram_head->function id formal_parameter punc_colon basic_type
 		res = token_seq[token_seq_pos1 + 2].content;
-		res = generateCode(product_seq, token_seq, token_seq_pos1) + " " + res;
-		res += generateCode(product_seq, token_seq, token_seq_pos1);
+		res = generateCode(product_seq,token_seq,token_seq_pos1) + " " + res;
+		res += generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 32://formal_parameter->punc_round_left parameter_list punc_round_right
-		res = "(" + generateCode(product_seq, token_seq, token_seq_pos1) + ")";
+		res = "(" + generateCode(product_seq,token_seq,token_seq_pos1) + ")";
 		return res;
 
 	case 33://formal_parameter->null
 		return "";
 
 	case 34://parameter_list->parameter_list punc_semicolon parameter
-		res = generateCode(product_seq, token_seq, token_seq_pos1) + "," +
-			generateCode(product_seq, token_seq, token_seq_pos1);
+		res = generateCode(product_seq,token_seq,token_seq_pos1) + "," +
+			generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 35://parameter_list->parameter
 	case 36://parameter->var_parameter
 	case 37://parameter->value_parameter
-		return generateCode(product_seq, token_seq, token_seq_pos1);
+		return generateCode(product_seq,token_seq,token_seq_pos1);
 
 	case 38: //var_parameter->var value_parameter
-		res = replaceString(generateCode(product_seq, token_seq, token_seq_pos1), ' ', " &");
+		res = replaceString(generateCode(product_seq,token_seq,token_seq_pos1), ' ', " &");
 		return res;
 
 	case 39://value_parameter->idlist punc_colon basic_type
-		sb = generateCode(product_seq, token_seq, token_seq_pos1);
-		res = replaceString("," + generateCode(product_seq, token_seq, token_seq_pos1), ',', "," + sb + " ");
+		sb = generateCode(product_seq,token_seq,token_seq_pos1);
+		res = replaceString("," + generateCode(product_seq,token_seq,token_seq_pos1), ',', "," + sb + " ");
 		res = res.substr(1);
 		return res;
 
 	case 40://subprogram_body->const_declarations var_declarations compound_statement
 		sb = "\n{\n";
 		//cout << "sb="<<sb;
-		res = sb + generateCode(product_seq, token_seq, token_seq_pos1) +
-			generateCode(product_seq, token_seq, token_seq_pos1) +
-			generateCode(product_seq, token_seq, token_seq_pos1) + "}\n";
+		res = sb + generateCode(product_seq,token_seq,token_seq_pos1) +
+			generateCode(product_seq,token_seq,token_seq_pos1) +
+			generateCode(product_seq,token_seq,token_seq_pos1) + "}\n";
 		return res;
 
 	case 41://compound_statement->begin statement_list end
-		res = "" + generateCode(product_seq, token_seq, token_seq_pos1) + "";
+		res = "" + generateCode(product_seq,token_seq,token_seq_pos1) + "";
 		return res;
 
 	case 42://statement_list->statement_list punc_semicolon statement
-		res = generateCode(product_seq, token_seq, token_seq_pos1) + "" +
-			generateCode(product_seq, token_seq, token_seq_pos1) + "";
+		res = generateCode(product_seq,token_seq,token_seq_pos1) + "" +
+			generateCode(product_seq,token_seq,token_seq_pos1) + "";
 		return res;
 
 	case 43:// statement_list->statement
-		return generateCode(product_seq, token_seq, token_seq_pos1) + "";
+		return generateCode(product_seq,token_seq,token_seq_pos1) + "";
 
 	case 44://statement->variable assignop expression
-		res = generateCode(product_seq, token_seq, token_seq_pos1) +
-			"=" + generateCode(product_seq, token_seq, token_seq_pos1) + ";\n";
+		res = generateCode(product_seq,token_seq,token_seq_pos1) +
+			"=" + generateCode(product_seq,token_seq,token_seq_pos1) + ";\n";
 		return res;
 
 	case 45:// statement->procedure_call
-		return generateCode(product_seq, token_seq, token_seq_pos1) + ";\n";
+		return generateCode(product_seq,token_seq,token_seq_pos1) + ";\n";
 
 	case 46: // statement->compound_statement
-		res = generateCode(product_seq, token_seq, token_seq_pos1);
+		res = generateCode(product_seq,token_seq,token_seq_pos1);
 		if (count(res.begin(), res.end(), ';') > 1)
 			res = "{\n" + res + "}\n";
 		return res;
 
 	case 47: // statement->if expression then statement else_part
-		res = "if(" + generateCode(product_seq, token_seq, token_seq_pos1) + ") " +
-			generateCode(product_seq, token_seq, token_seq_pos1) + "" +
-			generateCode(product_seq, token_seq, token_seq_pos1);
+		res = "if(" + generateCode(product_seq,token_seq,token_seq_pos1) + ") " +
+			generateCode(product_seq,token_seq,token_seq_pos1) + "" +
+			generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 48: // statement->for id assignop expression to expression do statement
 		sa = token_seq[token_seq_pos1 + 2].content;
 		//cout << "sa=" << sa << endl;
 		res = "for(" + sa + "=" +
-			generateCode(product_seq, token_seq, token_seq_pos1) + ";" +
-			sa + "<=" + generateCode(product_seq, token_seq, token_seq_pos1) + ";" + sa + "++) "
-			+ generateCode(product_seq, token_seq, token_seq_pos1);
+			generateCode(product_seq,token_seq,token_seq_pos1) + ";" +
+			sa + "<=" + generateCode(product_seq,token_seq,token_seq_pos1) + ";" + sa + "++) "
+			+ generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 49: // statement->read punc_round_left variable_list punc_round_right
-		sb = generateCode(product_seq, token_seq, token_seq_pos1);
+		sb = generateCode(product_seq,token_seq,token_seq_pos1);
 		//for (auto s : splitString(sb, '|'))
 		//{
 			//	sa = splitString(s, '[')[0];
@@ -543,7 +578,7 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		return "scanf(" + res + ");\n";
 
 	case 50: // statement->write punc_round_left expression_list punc_round_right
-		sb = generateCode(product_seq, token_seq, token_seq_pos1);
+		sb = generateCode(product_seq,token_seq,token_seq_pos1);
 		/*for (auto s : splitString(sb, ','))
 		{
 			sa = splitString(s, '[')[0];
@@ -570,20 +605,20 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		return "";
 
 	case 52: // variable_list->variable_list punc_comma variable
-		res = generateCode(product_seq, token_seq, token_seq_pos1) +
-			"|" + generateCode(product_seq, token_seq, token_seq_pos1);
+		res = generateCode(product_seq,token_seq,token_seq_pos1) +
+			"|" + generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 53: // variable_list->variable
-		return generateCode(product_seq, token_seq, token_seq_pos1);
+		return generateCode(product_seq,token_seq,token_seq_pos1);
 
 	case 54: // variable->id id_varpart
 		res = token_seq[token_seq_pos1 + 1].content;
-		res += "" + generateCode(product_seq, token_seq, token_seq_pos1);
+		res += "" + generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 55: // id_varpart->punc_square_left expression_list puncsquare_right
-		res = "[" + replaceString(generateCode(product_seq, token_seq, token_seq_pos1), ',', "][") + "]";
+		res = "[" + replaceString(generateCode(product_seq,token_seq,token_seq_pos1), ',', "][") + "]";
 		return res;
 
 	case 56: // id_varpart->null
@@ -595,55 +630,55 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 
 	case 58: // procedure_call->id punc_round_left expression_list punc_round_right
 		res = token_seq[token_seq_pos1 + 1].content;
-		res += "(" + generateCode(product_seq, token_seq, token_seq_pos1) + ")";
+		res += "(" + generateCode(product_seq,token_seq,token_seq_pos1) + ")";
 		return res;
 
 	case 59: // else_part->else statement
-		res = "else " + generateCode(product_seq, token_seq, token_seq_pos1) + "";
+		res = "else " + generateCode(product_seq,token_seq,token_seq_pos1) + "";
 		return res;
 
 	case 60: // else_part->null
 		return "";
 
 	case 61: // expression_list->expression_list punc_comma expression
-		res = generateCode(product_seq, token_seq, token_seq_pos1) + "," +
-			generateCode(product_seq, token_seq, token_seq_pos1);
+		res = generateCode(product_seq,token_seq,token_seq_pos1) + "," +
+			generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 62: // expression_list->expression
 	case 64: // expression->simple_expression
 	case 66: // simple_expression->term
-		return generateCode(product_seq, token_seq, token_seq_pos1);
+		return generateCode(product_seq,token_seq,token_seq_pos1);
 
 	case 63: // expression->simple_expression relop simple_expression
 	case 65: // simple_expression->simple_expression addop term
 	case 67: // term->term mulop factor
-		return generateCode(product_seq, token_seq, token_seq_pos1) + "" +
-			generateCode(product_seq, token_seq, token_seq_pos1) + "" +
-			generateCode(product_seq, token_seq, token_seq_pos1);
+		return generateCode(product_seq,token_seq,token_seq_pos1) + "" +
+			generateCode(product_seq,token_seq,token_seq_pos1) + "" +
+			generateCode(product_seq,token_seq,token_seq_pos1);
 
 	case 68: // term->factor
 	case 69: // factor->num
 	case 70: // factor->variable
-		return generateCode(product_seq, token_seq, token_seq_pos1);
+		return generateCode(product_seq,token_seq,token_seq_pos1);
 
 	case 71: // factor->id punc_round_left expression_list punc_round_right
 		res = token_seq[token_seq_pos1 + 3].content;
-		res += "(" + generateCode(product_seq, token_seq, token_seq_pos1) + ")";
+		res += "(" + generateCode(product_seq,token_seq,token_seq_pos1) + ")";
 		return res;
 
 
 	case 72: // factor->punc_round_left expression punc_round_right
-		res = "(" + generateCode(product_seq, token_seq, token_seq_pos1) + ")";
+		res = "(" + generateCode(product_seq,token_seq,token_seq_pos1) + ")";
 		return res;
 
 	case 73: // factor->not factor
 		res = "!(" +
-			generateCode(product_seq, token_seq, token_seq_pos1) + ")";
+			generateCode(product_seq,token_seq,token_seq_pos1) + ")";
 		return res;
 
 	case 74: // factor->addop_sub factor
-		res = "-" + generateCode(product_seq, token_seq, token_seq_pos1);
+		res = "-" + generateCode(product_seq,token_seq,token_seq_pos1);
 		return res;
 
 	case 75: // relop->relop_e
@@ -698,7 +733,8 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 	}
 	return "";
 }
-string generate_Code(vector<int>& product_seq, vector<token>& token_seq, int token_seq_pos1)
+string generate_Code(vector<int>& product_seq, vector<token>& token_seq,int token_seq_pos1)
 {
-	return generateCode(product_seq, token_seq, token_seq_pos1);
+	getTokenSeqPos1(token_seq_pos1);
+	return generateCode(product_seq,token_seq,token_seq_pos1);
 }

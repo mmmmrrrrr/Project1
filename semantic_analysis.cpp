@@ -7,8 +7,8 @@ Id errorId, temp1;
 IdTable *nowIdTable;
 
 queue<Id> constRecord;
-queue<vector<Id>> rlistRecord;
-queue<vector<Id>> wlistRecord;
+vector<vector<Id>> rlistRecord;
+vector<vector<Id>> wlistRecord;
 
 Id getConst()
 {
@@ -19,14 +19,14 @@ Id getConst()
 
 vector<Id> getRlist()
 {
-	vector<Id> t(rlistRecord.front());
-	rlistRecord.pop();
+	vector<Id> t(rlistRecord.back());
+	rlistRecord.pop_back();
 	return t;
 }
 vector<Id> getWlist()
 {
-	vector<Id> t(wlistRecord.front());
-	wlistRecord.pop();
+	vector<Id> t(wlistRecord.back());
+	wlistRecord.pop_back();
 	return t;
 }
 
@@ -460,13 +460,13 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 
 		case 49: // statement->read punc_round_left variable_list punc_round_right
 			//cout<<"varList.size()="<<varList.size()<<endl;
-			rlistRecord.push(varList);
+			rlistRecord.push_back(varList);
 			varList.clear();
 			token_seq_pos += 3;
 			break;
 
 		case 50: // statement->write punc_round_left expression_list punc_round_right
-			wlistRecord.push(exprListStack[exprListStack.size() - 1]);
+			wlistRecord.push_back(exprListStack[exprListStack.size() - 1]);
 			exprListStack.pop_back();
 			token_seq_pos += 3;
 			break;
@@ -508,10 +508,6 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 			{
 				//cout << temp.dataType.dimension << ' ' << idStack[idStack.size() - 1].dataType.dimension << endl;
 				reportError("use array error.", token_seq[token_seq_pos]);
-			}
-			if (temp.idType == _constant)
-			{
-				reportError("constant in assignment", token_seq[token_seq_pos]);
 			}
 			idStack[idStack.size() - 1] = temp;
 			token_seq_pos += 1;

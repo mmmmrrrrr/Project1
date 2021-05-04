@@ -10,3 +10,4 @@ vector<string> splitString(string s, char c);
 string replaceString(string s, char c, string r);
 string generateCode(vector<int>& product_seq, vector<token>& token_seq, int token_seq_pos1);
 string generate_Code(vector<int>& product_seq, vector<token>& token_seq, int token_seq_pos1);
+void getTokenSeqPos1(int val);

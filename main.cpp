@@ -43,8 +43,7 @@ int main()
 		cout << i.content << endl;
 
 	semantic_analysis(product_seq, token_seq, numToProduct);
-	int token_seq_pos1=token_seq.size()-1;
-	cout << generate_Code(product_seq, token_seq, token_seq_pos1) << endl;
+	cout << generate_Code(product_seq, token_seq, token_seq.size()-1) << endl;
 	cout << "Success!!" << endl;
 	return 0;
 }
