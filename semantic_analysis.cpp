@@ -657,6 +657,9 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 				{
 					if (temp.dataType.basicType > 2)
 						reportError("not integer(real) type in divide(mul).", token_seq[token_seq_pos - 1]);
+					if (operator_stack_top == "divide"){
+						temp.dataType.basicType = _real;
+					}
 				}
 				idStack.pop_back();
 				idStack.pop_back();

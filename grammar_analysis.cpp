@@ -986,6 +986,7 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 				cout << "Parenthesis mismatch." << endl;
 			else
 				cout << "This mark is redundant" << endl;
+			exit(1);
 		}
 	}
 
