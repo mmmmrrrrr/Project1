@@ -1,5 +1,6 @@
 #include "grammar_analysis.h"
 #include "semantic_analysis.h"
+#include "code_generate.h"
 #include "FlexLexer.h"
 int main()
 {
@@ -42,14 +43,8 @@ int main()
 		cout << i.content << endl;
 
 	semantic_analysis(product_seq, token_seq, numToProduct);
+	int token_seq_pos1=token_seq.size()-1;
+	cout << generate_Code(product_seq, token_seq, token_seq_pos1) << endl;
 	cout << "Success!!" << endl;
-	for(int i=1;i<=2;++i){
-		vector<Id> t(getWlist());
-		cout<<"wlist["<<i<<"].size()="<<t.size()<<endl;
-		for(auto j:t)
-			cout<<j.dataType.basicType<<' ';
-		cout<<endl;
-	}
-	cout<<endl;
 	return 0;
 }

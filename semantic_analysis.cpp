@@ -505,6 +505,9 @@ void semantic_analysis(const vector<int> &product_seq, const vector<token> &toke
 				//cout << temp.dataType.dimension << ' ' << idStack[idStack.size() - 1].dataType.dimension << endl;
 				reportError("use array error.", token_seq[token_seq_pos]);
 			}
+			if(temp.idType==_constant){
+				reportError("constant in assignment",token_seq[token_seq_pos]);
+			}
 			idStack[idStack.size() - 1] = temp;
 			token_seq_pos += 1;
 			break;
