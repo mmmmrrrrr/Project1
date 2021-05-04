@@ -6,8 +6,6 @@
 #include <vector>
 #pragma execution_character_set("utf-8")
 
-int token_seq_pos1;
-
 bool isInt(string str)
 {
 	bool isNum = false;
@@ -67,7 +65,6 @@ string id_type(string s)
 		else
 			return "double";
 	}
-	return "";
 }
 
 string idtoType(Id name_to_id) //�ҵ������ڷ��ű��ж�Ӧ������
@@ -289,7 +286,6 @@ int calculate(int num)
 	defalut:
 		return token_seq_pos1;
 	}
-	return token_seq_pos1;
 }
 
 string generateCode(vector<int> &product_seq, vector<token> &token_seq, int token_seq_pos)
@@ -739,6 +735,5 @@ string generateCode(vector<int> &product_seq, vector<token> &token_seq, int toke
 }
 string generate_Code(vector<int> &product_seq, vector<token> &token_seq, int token_seq_pos)
 {
-	token_seq_pos1 = token_seq_pos;
 	return generateCode(product_seq, token_seq, token_seq_pos);
 }
