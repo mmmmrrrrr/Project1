@@ -4,7 +4,8 @@
 #include "FlexLexer.h"
 int main()
 {
-	ifstream ifile("test.pas");
+	freopen("error.out","w",stderr);
+	ifstream ifile("test1.pas");
 	ofstream ofile("lexOut.txt");
 	yyFlexLexer yy;
 	yy.switch_streams(ifile, ofile);
@@ -14,7 +15,7 @@ int main()
 	ofile.close();
 	yy.yylex();
 	ifstream productIn;
-	productIn.open("C:\\acm\\coding\\Project1\\production_sequence.pas");
+	productIn.open("D:\\coding\\Project1\\production_sequence.pas");
 	map<int, string> numToProduct;
 	numToProduct.clear();
 	for (int i = 1; i <= 90; ++i)
@@ -25,7 +26,6 @@ int main()
 		getline(productIn, y, '\n');
 		numToProduct[x] = y;
 	}
-
 	vector<token> token_seq;
 	token_seq.clear();
 
@@ -37,13 +37,8 @@ int main()
 
 	initIdTable();
 
-	for (auto i : product_seq)
-		cout << i << endl;
-	for (auto i : token_seq)
-		cout << i.content << endl;
 
-	semantic_analysis(product_seq, token_seq, numToProduct);
-	cout << generate_Code(product_seq, token_seq, token_seq.size()-1) << endl;
+	cout<<semantic_analysis(product_seq, token_seq, numToProduct)<<endl;
 	cout << "Success!!" << endl;
 	return 0;
 }
