@@ -100,18 +100,27 @@ string semantic_analysis(const vector<int> &productSeq, const vector<token> &tok
 
 		case 1: // programstruct->program_head punc_semicolon program_body punc_point
 			//------
-			codeStack.back() = "#include <stdio.h>\n\n" + codeStack.back();
+			res = "#include <stdio.h>\n\n" + codeStack.back();
+			codeStack.pop_back();
+			codeStack.pop_back();
+			codeStack.push_back(res);
 			//------
 			tokenSeqPos += 2;
 			break;
 
 		case 2: // program_head->program id punc_round_left idlist punc_round_right
+			//------
+			codeStack.pop_back();
+			codeStack.push_back("");
+			//------
 			idList.clear();
 			tokenSeqPos += 4;
 			break;
 
 		case 3: // program_head->program id
-
+			//------
+			codeStack.push_back("");
+			//------
 			tokenSeqPos += 2;
 			break;
 
@@ -133,6 +142,9 @@ string semantic_analysis(const vector<int> &productSeq, const vector<token> &tok
 			temp = temp1;
 			temp.name = tokenSeq[tokenSeqPos + 1].content;
 			idList.push_back(temp);
+			//------
+			codeStack.back()+=","+temp.name;
+			//------
 			tokenSeqPos += 2;
 			break;
 
@@ -140,6 +152,9 @@ string semantic_analysis(const vector<int> &productSeq, const vector<token> &tok
 			temp = temp1;
 			temp.name = tokenSeq[tokenSeqPos].content;
 			idList.push_back(temp);
+			//------
+			codeStack.push_back(temp.name);
+			//------
 			tokenSeqPos += 1;
 			break;
 
@@ -237,6 +252,13 @@ string semantic_analysis(const vector<int> &productSeq, const vector<token> &tok
 					return "";
 				}
 			}
+			//------
+			res=codeStack.back();//type
+			codeStack.pop_back();
+			res=res+' '+ codeStack.back()+";\n";//idlist
+			codeStack.pop_back();
+			codeStack.back()+=res;
+			//------
 			idList.clear();
 			idStack.pop_back();
 			tokenSeqPos += 2;
@@ -244,17 +266,24 @@ string semantic_analysis(const vector<int> &productSeq, const vector<token> &tok
 
 		case 18: // var_declaration->idlist punc_colon type
 			temp = idStack[idStack.size() - 1];
-			while (idList.size())
+			for (auto &j : idList)
 			{
-				idList[idList.size() - 1].dataType = temp.dataType;
-				idList[idList.size() - 1].idType = _variable;
-				if (!insert_id(idList[idList.size() - 1]))
+				j.dataType = temp.dataType;
+				j.idType = _variable;
+				if (!insert_id(j))
 				{
 					reportError("repeated definition", tokenSeq[tokenSeqPos]);
 					return "";
 				}
-				idList.pop_back();
 			}
+			//------
+			res=codeStack.back();//type
+			codeStack.pop_back();
+			res=res+' '+ codeStack.back()+";\n";//idlist
+			codeStack.pop_back();
+			codeStack.push_back(res);
+			//------
+			idList.clear();
 			idStack.pop_back();
 			tokenSeqPos += 1;
 			break;
@@ -272,6 +301,9 @@ string semantic_analysis(const vector<int> &productSeq, const vector<token> &tok
 			temp = temp1;
 			temp.dataType.basicType = _integer;
 			idStack.push_back(temp);
+			//------
+			codeStack.push_back("short");
+			//------
 			tokenSeqPos += 1;
 			break;
 
@@ -279,6 +311,9 @@ string semantic_analysis(const vector<int> &productSeq, const vector<token> &tok
 			temp = temp1;
 			temp.dataType.basicType = _real;
 			idStack.push_back(temp);
+			//------
+			codeStack.push_back("float");
+			//------
 			tokenSeqPos += 1;
 			break;
 
@@ -286,6 +321,9 @@ string semantic_analysis(const vector<int> &productSeq, const vector<token> &tok
 			temp = temp1;
 			temp.dataType.basicType = _boolean;
 			idStack.push_back(temp);
+			//------
+			codeStack.push_back("bool");
+			//------
 			tokenSeqPos += 1;
 			break;
 
@@ -293,6 +331,9 @@ string semantic_analysis(const vector<int> &productSeq, const vector<token> &tok
 			temp = temp1;
 			temp.dataType.basicType = _char;
 			idStack.push_back(temp);
+			//------
+			codeStack.push_back("char");
+			//------
 			tokenSeqPos += 1;
 			break;
 

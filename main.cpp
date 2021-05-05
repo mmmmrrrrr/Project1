@@ -5,7 +5,7 @@
 int main()
 {
 	freopen("error.out","w",stderr);
-	ifstream ifile("test1.pas");
+	ifstream ifile("test2.pas");
 	ofstream ofile("lexOut.txt");
 	yyFlexLexer yy;
 	yy.switch_streams(ifile, ofile);
