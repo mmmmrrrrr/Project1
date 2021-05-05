@@ -1,6 +1,8 @@
 #include <stdio.h>
 ```
 
+........
+
 const short maxn = 200005;
 short cntl[200006];
 short cntr[200006];
