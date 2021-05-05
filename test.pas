@@ -22,6 +22,7 @@ begin
     else min:=c;
 end;
  begin
+ {1111}
     read(T);
     for o:=1 to T do begin
         read(n,l,r);
