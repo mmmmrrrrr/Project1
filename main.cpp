@@ -4,8 +4,8 @@
 #include "FlexLexer.h"
 int main()
 {
-	freopen("error.out","w",stderr);
-	ifstream ifile("test2.pas");
+	freopen("a.out","w",stderr);
+	ifstream ifile("test3.pas");
 	ofstream ofile("lexOut.txt");
 	yyFlexLexer yy;
 	yy.switch_streams(ifile, ofile);

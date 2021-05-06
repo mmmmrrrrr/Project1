@@ -7,7 +7,9 @@ const
     e=+3253;
 var
     f,g,k,b:integer;
-    h,i:char;
+      h,i:char;
     dfds,c2,g3:boolean;
     dfsge1312,d13,reww:real;
+ begin
+    d13:=(g+f)*k / b;
  end.

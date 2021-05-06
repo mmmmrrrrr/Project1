@@ -12,5 +12,12 @@ int main()
     cout<<a.back().a<<endl;
     return 0;
 }
+/*
 			//------
+			res=codeStack.back();
+			codeStack.pop_back();
+			res=codeStack.back()+res;
+			codeStack.pop_back();
+			codeStack.push_back(res);
 			//------
+*/
