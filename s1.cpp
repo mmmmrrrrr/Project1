@@ -30,7 +30,6 @@ vector<Id> getWlist()
 	return t;
 }
 
-
 void reportError(string errInformation, token t)
 {
 	cerr << "Syntax error:"
@@ -87,12 +86,12 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 {
 	Id temp;
 	int tokenSeqPos = 0, mi, mx;
-	string operator_stack_top, res;
+	string operator_stack_top;
 	for (auto i : productSeq)
 	{
-		cerr << i << ": " << numToProduct[i] << endl;
+		cout << i << ": " << numToProduct[i] << endl;
 		if (i)
-			cerr << tokenSeq[tokenSeqPos].content << endl;
+			cout << tokenSeq[tokenSeqPos].content << endl;
 
 		switch (i)
 		{
@@ -100,37 +99,32 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			relocation();
 			cout << tokenSeqPos << ' ' << tokenSeq.size() << endl;
 			if (tokenSeqPos != tokenSeq.size())
-				cerr << "Token not use out." << endl;
+				cout << "Token not use out." << endl;
 			else
-				cerr << "Token use out." << endl;
+				cout << "Token use out." << endl;
 			return;
 			break;
 
 		case 1: // programstruct->program_head punc_semicolon program_body punc_point
-			
 			tokenSeqPos += 2;
 			break;
 
 		case 2: // program_head->program id punc_round_left idlist punc_round_right
-			
 			idList.clear();
 			tokenSeqPos += 4;
 			break;
 
 		case 3: // program_head->program id
-			
 			tokenSeqPos += 2;
 			break;
 
 		case 4: // program_body->const_declarations var_declarations subprogram_declarations compound_statement
-			
 			break;
 
 		case 5: // idlist->idlist punc_comma id
 			temp = temp1;
 			temp.name = tokenSeq[tokenSeqPos + 1].content;
 			idList.push_back(temp);
-			
 			tokenSeqPos += 2;
 			break;
 
@@ -138,7 +132,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			temp = temp1;
 			temp.name = tokenSeq[tokenSeqPos].content;
 			idList.push_back(temp);
-			
 			tokenSeqPos += 1;
 			break;
 
@@ -147,7 +140,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			break;
 
 		case 8: // const_declarations->null
-			
 			break;
 
 		case 9: // const_declaration->const_declaration punc_semicolon id relop_e const_value
@@ -157,7 +149,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 				reportError("repeated definition", tokenSeq[tokenSeqPos]);
 				return;
 			}
-			
+			constRecord.push(idStack[idStack.size() - 1]);
 			idStack.pop_back();
 			tokenSeqPos += 3;
 			break;
@@ -169,23 +161,20 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 				reportError("repeated definition", tokenSeq[tokenSeqPos]);
 				return;
 			}
-			
+			constRecord.push(idStack[idStack.size() - 1]);
 			idStack.pop_back();
+
 			tokenSeqPos += 2;
 			break;
 
 		case 11: // const_value->addop_add num
 			idStack[idStack.size() - 1].idType = _constant;
-			
-			tokenSeqPos += 1;
 			break;
 
 		case 12: // const_value->addop_sub num
 			idStack[idStack.size() - 1].idType = _constant;
 			idStack[idStack.size() - 1].dataType.constVal =
 				-idStack[idStack.size() - 1].dataType.constVal;
-			
-			tokenSeqPos += 1;
 			break;
 
 		case 13: // const_value->num
@@ -196,7 +185,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			temp.dataType.basicType = _char;
 			temp.idType = _constant;
 			idStack.push_back(temp);
-			
 			tokenSeqPos += 1;
 			break;
 
@@ -205,7 +193,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			break;
 
 		case 16: // var_declarations->null
-			
 			break;
 
 		case 17: // var_declaration->var_declaration punc_semicolon idlist punc_colon type
@@ -220,7 +207,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 					return;
 				}
 			}
-			
 			idList.clear();
 			idStack.pop_back();
 			tokenSeqPos += 2;
@@ -228,18 +214,17 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 
 		case 18: // var_declaration->idlist punc_colon type
 			temp = idStack[idStack.size() - 1];
-			for (auto &j : idList)
+			while (idList.size())
 			{
-				j.dataType = temp.dataType;
-				j.idType = _variable;
-				if (!insert_id(j))
+				idList[idList.size() - 1].dataType = temp.dataType;
+				idList[idList.size() - 1].idType = _variable;
+				if (!insert_id(idList[idList.size() - 1]))
 				{
 					reportError("repeated definition", tokenSeq[tokenSeqPos]);
 					return;
 				}
+				idList.pop_back();
 			}
-			
-			idList.clear();
 			idStack.pop_back();
 			tokenSeqPos += 1;
 			break;
@@ -257,7 +242,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			temp = temp1;
 			temp.dataType.basicType = _integer;
 			idStack.push_back(temp);
-			
 			tokenSeqPos += 1;
 			break;
 
@@ -265,7 +249,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			temp = temp1;
 			temp.dataType.basicType = _real;
 			idStack.push_back(temp);
-			
 			tokenSeqPos += 1;
 			break;
 
@@ -273,7 +256,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			temp = temp1;
 			temp.dataType.basicType = _boolean;
 			idStack.push_back(temp);
-			
 			tokenSeqPos += 1;
 			break;
 
@@ -281,7 +263,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			temp = temp1;
 			temp.dataType.basicType = _char;
 			idStack.push_back(temp);
-			
 			tokenSeqPos += 1;
 			break;
 
@@ -318,7 +299,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			break;
 
 		case 28: // subprogram_declarations->null
-			
 			break;
 
 		case 29: // subprogram->subprogram_head punc_semicolon subprogram_body
@@ -372,7 +352,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			break;
 
 		case 33: // formal_parameter->null
-			
 			break;
 
 		case 34: // parameter_list->parameter_list punc_semicolon parameter
@@ -428,8 +407,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			break;
 
 		case 42: // statement_list->statement_list punc_semicolon statement
-			
-
 			tokenSeqPos += 1;
 			break;
 
@@ -444,7 +421,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			}
 			else
 				reportError("different assignment types ", tokenSeq[tokenSeqPos]);
-			
 			idStack.pop_back();
 			idStack.pop_back();
 			tokenSeqPos += 1;
@@ -484,17 +460,18 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 
 		case 49: // statement->read punc_round_left variable_list punc_round_right
 			//cout<<"varList.size()="<<varList.size()<<endl;
+			rlistRecord.push_back(varList);
 			varList.clear();
 			tokenSeqPos += 3;
 			break;
 
 		case 50: // statement->write punc_round_left expression_list punc_round_right
+			wlistRecord.push_back(exprListStack[exprListStack.size() - 1]);
 			exprListStack.pop_back();
 			tokenSeqPos += 3;
 			break;
 
 		case 51: // statement->null
-			
 			break;
 
 		case 52: // variable_list->variable_list punc_comma variable
@@ -514,7 +491,11 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 		case 54: // variable->id id_varpart
 
 			idStack[idStack.size() - 1].name = tokenSeq[tokenSeqPos].content;
+			//cout << "---" << tokenSeq[tokenSeqPos].content << endl;
+
 			temp = searchId(idStack[idStack.size() - 1].name);
+			//cout << "yyy" << temp.dataType.basicType << endl;
+			//cout << temp.isError << endl;
 			if (temp.isError)
 			{
 				reportError("use undefined variable.", tokenSeq[tokenSeqPos]);
@@ -525,10 +506,10 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			}*/
 			if (temp.dataType.dimension != idStack[idStack.size() - 1].dataType.dimension)
 			{
+				//cout << temp.dataType.dimension << ' ' << idStack[idStack.size() - 1].dataType.dimension << endl;
 				reportError("use array error.", tokenSeq[tokenSeqPos]);
 			}
 			idStack[idStack.size() - 1] = temp;
-			
 			tokenSeqPos += 1;
 			break;
 
@@ -549,7 +530,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 		case 56: // id_varpart->null
 			temp = temp1;
 			idStack.push_back(temp);
-			
 			break;
 
 		case 57: // procedure_call->id
@@ -599,7 +579,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			break;
 
 		case 60: // else_part->null
-			
 			break;
 
 		case 61: // expression_list->expression_list punc_comma expression
@@ -624,7 +603,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			temp = temp1;
 			temp.dataType.basicType = _boolean;
 			idStack.push_back(temp);
-			
 			break;
 
 		case 64: // expression->simple_expression
@@ -632,28 +610,28 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 
 		case 65: // simple_expression->simple_expression addop term
 			operator_stack_top = opStack[opStack.size() - 1];
-			if (!(idStack[idStack.size() - 1].dataType == idStack[idStack.size() - 2].dataType))
+			if (idStack[idStack.size() - 1].dataType == idStack[idStack.size() - 2].dataType)
 			{
-				reportError("different type in addop", tokenSeq[tokenSeqPos - 1]);
-				return;
-			}
-			temp = temp1;
-			temp.dataType.basicType = max(idStack[idStack.size() - 2].dataType.basicType, idStack[idStack.size() - 1].dataType.basicType);
-			if (operator_stack_top == "or")
-			{
-				if (temp.dataType.basicType != _boolean)
-					reportError("not boolean type in or.", tokenSeq[tokenSeqPos - 1]);
+				temp = temp1;
+				temp.dataType.basicType = max(idStack[idStack.size() - 2].dataType.basicType, idStack[idStack.size() - 1].dataType.basicType);
+				if (operator_stack_top == "or")
+				{
+					if (temp.dataType.basicType != _boolean)
+						reportError("not boolean type in or.", tokenSeq[tokenSeqPos - 1]);
+				}
+				else
+				{
+					if (temp.dataType.basicType > 2)
+						reportError("not integer(real) type in add(sub).", tokenSeq[tokenSeqPos - 1]);
+				}
+				idStack.pop_back();
+				idStack.pop_back();
+				idStack.push_back(temp);
 			}
 			else
-			{
-				if (temp.dataType.basicType > 2)
-					reportError("not integer(real) type in add(sub).", tokenSeq[tokenSeqPos - 1]);
-			}
-			
-			idStack.pop_back();
-			idStack.pop_back();
-			idStack.push_back(temp);
+				reportError("different type in addop", tokenSeq[tokenSeqPos - 1]);
 			opStack.pop_back();
+
 			break;
 
 		case 66: // simple_expression->term
@@ -661,36 +639,34 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 
 		case 67: // term->term mulop factor
 			operator_stack_top = opStack[opStack.size() - 1];
-			if (!(idStack[idStack.size() - 1].dataType == idStack[idStack.size() - 2].dataType))
+			if (idStack[idStack.size() - 1].dataType == idStack[idStack.size() - 2].dataType)
 			{
-				reportError("different type in mulop", tokenSeq[tokenSeqPos - 1]);
-				return;
-			}
-			temp = temp1;
-			temp.dataType.basicType = max(idStack[idStack.size() - 2].dataType.basicType, idStack[idStack.size() - 1].dataType.basicType);
-			if (operator_stack_top == "and")
-			{
-				if (temp.dataType.basicType != _boolean)
-					reportError("not boolean type in and.", tokenSeq[tokenSeqPos - 1]);
-			}
-			else if (operator_stack_top == "div" || operator_stack_top == "mod")
-			{
-				if (temp.dataType.basicType != _integer)
-					reportError("not integer type in div(mod).", tokenSeq[tokenSeqPos - 1]);
+				temp = temp1;
+				temp.dataType.basicType = max(idStack[idStack.size() - 2].dataType.basicType, idStack[idStack.size() - 1].dataType.basicType);
+				if (operator_stack_top == "and")
+				{
+					if (temp.dataType.basicType != _boolean)
+						reportError("not boolean type in and.", tokenSeq[tokenSeqPos - 1]);
+				}
+				else if (operator_stack_top == "div" || operator_stack_top == "mod")
+				{
+					if (temp.dataType.basicType != _integer)
+						reportError("not integer type in div(mod).", tokenSeq[tokenSeqPos - 1]);
+				}
+				else
+				{
+					if (temp.dataType.basicType > 2)
+						reportError("not integer(real) type in divide(mul).", tokenSeq[tokenSeqPos - 1]);
+					if (operator_stack_top == "divide"){
+						temp.dataType.basicType = _real;
+					}
+				}
+				idStack.pop_back();
+				idStack.pop_back();
+				idStack.push_back(temp);
 			}
 			else
-			{
-				if (temp.dataType.basicType > 2)
-					reportError("not integer(real) type in divide(mul).", tokenSeq[tokenSeqPos - 1]);
-				if (operator_stack_top == "divide")
-				{
-					temp.dataType.basicType = _real;
-				}
-			}
-			
-			idStack.pop_back();
-			idStack.pop_back();
-			idStack.push_back(temp);
+				reportError("different type in mulop", tokenSeq[tokenSeqPos - 1]);
 			opStack.pop_back();
 			break;
 
@@ -734,7 +710,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			break;
 
 		case 72: // factor->punc_round_left expression punc_round_right
-			
 			tokenSeqPos += 2;
 			break;
 
@@ -743,7 +718,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			{
 				reportError("not boolean type in not.", tokenSeq[tokenSeqPos - 1]);
 			}
-			
 			tokenSeqPos += 1;
 			break;
 
@@ -752,61 +726,51 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			{
 				reportError("not integer(real) type in minus.", tokenSeq[tokenSeqPos - 1]);
 			}
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 75: // relop->relop_e
 			opStack.push_back("e");
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 76: // relop->relop_ne
 			opStack.push_back("ne");
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 77: // relop->relop_l
 			opStack.push_back("l");
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 78: // relop->relop_le
 			opStack.push_back("le");
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 79: // relop->relop_g
 			opStack.push_back("g");
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 80: // relop->relop_ge
 			opStack.push_back("ge");
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 81: // addop->addop_add
 			opStack.push_back("add");
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 82: // addop->addop_sub
 			opStack.push_back("sub");
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 83: // addop->addop_or
 			opStack.push_back("or");
-			
 			tokenSeqPos += 1;
 			break;
 
@@ -814,7 +778,6 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			temp = temp1;
 			temp.dataType.basicType = _real;
 			idStack.push_back(temp);
-			
 			tokenSeqPos += 1;
 			break;
 
@@ -823,48 +786,45 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			temp.dataType.basicType = _integer;
 			temp.dataType.constVal = atoi(tokenSeq[tokenSeqPos].content.c_str());
 			idStack.push_back(temp);
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 86: // mulop->mulop_mul
 			opStack.push_back("mul");
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 87: // mulop->mulop_divide
 			opStack.push_back("divide");
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 88: // mulop->mulop_div
 			opStack.push_back("div");
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 89: // mulop->mulop_mod
 			opStack.push_back("mod");
-			
 			tokenSeqPos += 1;
 			break;
 
 		case 90: // mulop->mulop_and
 			opStack.push_back("and");
-			
 			tokenSeqPos += 1;
 			break;
 		}
-		/*
+
 		if (idStack.size())
-			cout << "idStack:" << idStack.size() << "..." << (int)idStack.back().dataType.basicType << endl;
-		cout << "exprListStackSize=" << exprListStack.size() << endl;
+			cout << idStack.size() << ":" << (int)idStack[idStack.size() - 1].dataType.basicType << "xxx" << endl;
+		else
+			cout << idStack.size() << ":"
+				 << "xxx" << endl;
+		cout << "exprListStackSize" << exprListStack.size() << endl;
 		if (exprListStack.size())
 			cout << "exprList.size()=" << exprListStack[exprListStack.size() - 1].size() << endl;
-		*/
 	}
+	//cout<<"RList.size()="<<rlistRecord.size()<<endl;
 }
 /*
 int main()

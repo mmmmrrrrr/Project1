@@ -52,6 +52,7 @@ struct Id
 struct IdTable
 {
 	IdTable *father;		  //指向父符号表的指针
+	string funName;
 	map<string, Id> nameToId; //hash表存储名字到标识符的映射
 } ;
 struct Error_Information
@@ -63,12 +64,13 @@ struct Error_Information
 void reportError(string errInformation, token t);
 Id searchId(string name); //根据名字进行查找，返回标识符信息
 bool insertId(Id id);	  //插入标识符到当前位置
-void location();
+void location(string funName);
 void relocation();
 void initIdTable();
-void semantic_analysis(const vector<int> &product_sequence, const vector<token> &token_sequence, map<int,string> &numToProduct);
+void semantic_analysis(const vector<int> &productSeq, const vector<token> &tokenSeq, map<int, string> &numToProduct);
 
 Id getConst();
 vector<Id> getRlist();
 vector<Id> getWlist();
+Id getArray(string funName,string arrayName);
 #endif

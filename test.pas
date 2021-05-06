@@ -9,6 +9,7 @@ var
     ans:integer;
 procedure swap(var a,b:integer);
 var
+    cntL,cntR:array [0..200005,0..1] of integer;
     t:integer;
 begin
     t:=a;

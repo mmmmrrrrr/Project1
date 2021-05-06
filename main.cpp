@@ -4,6 +4,7 @@
 #include "FlexLexer.h"
 int main()
 {
+	freopen("a.out","w",stderr);
 	ifstream ifile("test.pas");
 	ofstream ofile("lexOut.txt");
 	yyFlexLexer yy;
