@@ -6,8 +6,6 @@
 
 ### 2.1数据流图
 
-![image-20210507102735560](C:\Users\17231\AppData\Roaming\Typora\typora-user-images\image-20210507102735560.png)
-
 ### 2.2功能
 
 #### 1)词法分析
@@ -150,11 +148,31 @@ struct Id_Table
 
 - **idStack**(vector\<Id\>)
 
-用于记录标识符信息的栈。
+  用于记录标识符信息的栈。
 
-- **idList**(vector\<string\>)
+- **idList**(vector\<Id\>)
 
-用于变量定义时存储标识符列表。
+  用于变量定义时存储标识符列表。
+
+- **opStack**(vector\<string\>)
+
+  用于记录运算表达式操作符。
+
+- **paramList**(vector\<Id\>)
+
+  记录函数和过程的参数列表
+
+- **varList**(vector\<Id\>)
+
+  记录调用read函数的参数列表
+
+- **exprListStack** (vector\<vector\<Id\>\>)
+  
+  记录expressionList的列表，用于函数的调用。
+
+- **nowIdTable** (IdTable*)
+
+  当前所在符号表的指针。
 
 
 #### 4) 详细设计
@@ -201,13 +219,13 @@ struct Id_Table
   | "div","mod"     | 算术运算符 | integer                          | integer    |
   | "and","or"      | 与或运算符 | bool                             | bool       |
 
-- if与else语句
+- $if$与$else$语句
 
   $statement\to if\ expression\ then\ statement else\_part$
   
   检查$expression$的类型是否为$bool$
 
-- for 语句
+- $for$ 语句
 
   $statement\to for\ id\ assignop\ expression\ to\ expression\ do\ statement$
 
@@ -223,10 +241,29 @@ struct Id_Table
 
   将$idStack$中记录维度和类型的信息合并。
 
+  $variable->id\ id\_varpart$
+
+  查看数组，对比维度数量是否正确，以及$varpart$均为$integer$类型
+
 - 过程及函数使用
 
+  $parameter\_list\to parameter\_list\ punc\_semicolon\ parameter$
 
+  用$paramList$记录下参数列表.
+
+  $subprogram\_head\to function\ id\ formal_parameter\ punc_colon\ basic\_type$
+
+  将函数的属性(参数列表，返回值类型)计入符号表,并且进行定位，将所有的参数和返回值加入子符号表中。
   
+  $procedure\_call\to id\ punc\_round\_left\ expression\_list\ punc\_round\_right$
+
+  调用函数，从符号表中查找到函数后，对比是否参数类型和参数数量相同，并且对于引用参数需要看到对应表达式是否是一个单独的变量。
 
 
-- read与write处理
+- $read$与$write$处理
+
+  将read和write对应的所有标识符记录下来，提供给代码生成类型信息。
+
+## 6.程序测试
+
+
