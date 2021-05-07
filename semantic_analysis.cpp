@@ -64,6 +64,15 @@ Id searchId(string name)
 	}
 	return errorId;
 } //根据名字进行查找，返回标识符信息
+Id searchRootId(string name)
+{
+	IdTable *t = nowIdTable;
+	for(;t->father!=NULL;t=t->father)
+		;
+	if (t->nameToId.find(name) != t->nameToId.end())
+		return t->nameToId[name];
+	return errorId;
+}
 bool insert_id(Id id)
 {
 	//cout << "id.dim" << id.dataType.dimension << endl;
@@ -562,7 +571,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			break;
 
 		case 58: // procedure_call->id punc_round_left expression_list punc_round_right
-			temp = searchId(tokenSeq[tokenSeqPos].content);
+			temp = searchRootId(tokenSeq[tokenSeqPos].content);
 			if (temp.idType != _procedure && temp.idType != _function)
 			{
 				reportError("A non function(procedure) identifier was incorrectly called", tokenSeq[tokenSeqPos]);
@@ -697,7 +706,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			break;
 
 		case 71: // factor->id punc_round_left expression_list punc_round_right
-			temp = searchId(tokenSeq[tokenSeqPos].content);
+			temp = searchRootId(tokenSeq[tokenSeqPos].content);
 			if (temp.idType != _function)
 			{
 				reportError("A non function identifier was incorrectly called", tokenSeq[tokenSeqPos]);
@@ -721,7 +730,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			}
 			exprListStack.pop_back();
 			temp = temp1;
-			temp.dataType = searchId(tokenSeq[tokenSeqPos].content).retDataType;
+			temp.dataType = searchRootId(tokenSeq[tokenSeqPos].content).retDataType;
 			idStack.push_back(temp);
 			tokenSeqPos += 3;
 			break;

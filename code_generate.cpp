@@ -668,7 +668,7 @@ string generateCode(vector<int> &product_seq, vector<token> &token_seq, int toke
 		return generateCode(product_seq, token_seq, token_seq_pos);
 
 	case 71: // factor->id punc_round_left expression_list punc_round_right
-		res = token_seq[token_seq_pos + 3].content;
+		res = token_seq[token_seq_pos + 1].content;
 		res += "(" + generateCode(product_seq, token_seq, token_seq_pos) + ")";
 		return res;
 
