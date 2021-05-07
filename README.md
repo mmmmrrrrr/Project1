@@ -6,6 +6,8 @@
 
 ### 2.1数据流图
 
+![image-20210507102735560](C:\Users\17231\AppData\Roaming\Typora\typora-user-images\image-20210507102735560.png)
+
 ### 2.2功能
 
 #### 1)词法分析
@@ -153,17 +155,32 @@ struct Id_Table
 
 #### 4) 详细设计
 
-整体来看，程序的参数有整体所
+整体来看，程序根据产生式的序号，以及该产生式所归约的词法符号，决定如何进行对于符号表的修改和
 
 - 常量定义
 
-定义一个常量时，根据当前的
+  $const\_value \to ...$
+
+  $idStack$根据产生式记录下常量类型.
+
+  $const\_declaration\to id relop\_e const\_value$
+
+  根据$idStack$中常量类型和$id$，将其插入符号表中。
+
 
 - 变量定义
+  
+
+
 - 运算表达式
+
 - 赋值语句
 - if与else语句
 - for 语句
 - 数组使用
 - 过程及函数使用
 - read与write处理
+
+$$
+a
+$$

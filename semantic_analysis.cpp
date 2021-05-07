@@ -525,10 +525,10 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			{
 				reportError("use undefined variable.", tokenSeq[tokenSeqPos]);
 			}
-			/*if (idStack[idStack.size() - 2].idType == _constant)
+			if (idStack[idStack.size() - 2].idType != _variable)
 			{
-				reportError("use constant error.", tokenSeq[tokenSeqPos]);
-			}*/
+				reportError("Incorrect use of non variables.", tokenSeq[tokenSeqPos]);
+			}
 			if (temp.dataType.dimension != idStack[idStack.size() - 1].dataType.dimension)
 			{
 				//cout << temp.dataType.dimension << ' ' << idStack[idStack.size() - 1].dataType.dimension << endl;
