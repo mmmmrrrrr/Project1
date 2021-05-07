@@ -148,6 +148,10 @@ struct Id_Table
 
 #### 3) 所用数据结构说明
 
+- **idStack**(vector\<Id\>)
+
+用于记录标识符信息的栈。
+
 - **idList**(vector\<string\>)
 
 用于变量定义时存储标识符列表。
@@ -163,24 +167,58 @@ struct Id_Table
 
   $idStack$根据产生式记录下常量类型.
 
-  $const\_declaration\to id relop\_e const\_value$
+  $const\_declaration\to id\ relop\_e\ const\_value$
 
   根据$idStack$中常量类型和$id$，将其插入符号表中。
 
 
 - 变量定义
-  
 
+  $type \to ...$
+
+  $idStack$根据产生式记录下变量类型.
+
+  $idlist \to id | idList,id$
+
+  $idList$记录下id名。
+
+  $var\_declaration->idlist\ punc\_colon\ type$
+
+  根据$idStack$中变量量类型和$id$，将其插入符号表中。
 
 - 运算表达式
 
-- 赋值语句
-- if与else语句
-- for 语句
-- 数组使用
-- 过程及函数使用
-- read与write处理
+  $x \to y\ op \ z$
 
-$$
-a
-$$
+  根据$op$类型以及$y$和$z$的类型得出$x$的类型，以及判断是否存在运算符的使用错误
+
+  | 运算符          | 类型       | 子表达式y,z类型限制              | x表达式类型 |
+  |-----------------|------------|----------------------------------|-------------|
+  |relop           | 关系运算符 | y,z类型相同，或者为real和integer | bool        |
+  | not             | 取非运算符 | bool                             | bool        |
+  | minus           | 取反运算符 | integer或real                    | z类型       |
+  | "+","-","*","/" | 算术运算符 | integer或real                    | 有real      |
+  | "div","mod"     | 算术运算符 | integer                          | integer    |
+  | "and","or"      | 与或运算符 | bool                             | bool       |
+
+- if与else语句
+
+  $statement\to if\ expression\ then\ statement else\_part$
+  
+  检查$expression$的类型是否为$bool$
+
+- for 语句
+
+  $statement\to for\ id\ assignop\ expression\ to\ expression\ do\ statement$
+
+  检查$id$类型是否为$integer$
+
+- 数组使用
+
+  $period\to period\ punc\_comma\ digits\ punc\_point\ punc\_point\ digits$
+
+  记录数组维度增加一维，并且记录上限
+
+- 过程及函数使用
+
+- read与write处理

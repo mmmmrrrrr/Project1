@@ -342,8 +342,14 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			}
 			insert_id(temp);
 			location(temp.name);
-			for (auto j : paramList)
+			for (auto j : paramList){
+				if(j.idType!=_variable){
+					cerr<<j.name<<"not a variable."<<endl;
+					exit(0);
+				}
 				insert_id(j);
+
+			}
 			//parameter insert id table.
 			paramList.clear();
 			tokenSeqPos += 2;
@@ -383,6 +389,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			for (auto j : idList)
 			{
 				//cout << "idList.dataType.basicType=" << j.dataType.basicType << endl;
+				j.idType=_variable;
 				paramList.push_back(j);
 			}
 			idList.clear();
@@ -393,6 +400,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			for (auto j : idList)
 			{
 				//cout << "idList.dataType.basicType=" << j.dataType.basicType << endl;
+				j.idType=_variable;
 				paramList.push_back(j);
 			}
 			idList.clear();
@@ -525,7 +533,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			{
 				reportError("use undefined variable.", tokenSeq[tokenSeqPos]);
 			}
-			if (idStack[idStack.size() - 2].idType != _variable)
+			if (temp.idType != _variable)
 			{
 				reportError("Incorrect use of non variables.", tokenSeq[tokenSeqPos]);
 			}
