@@ -217,8 +217,16 @@ struct Id_Table
 
   $period\to period\ punc\_comma\ digits\ punc\_point\ punc\_point\ digits$
 
-  记录数组维度增加一维，并且记录上限
+  记录数组维度增加一维，并且记录上限和下限，并判断上限是否小于等于下限。
+
+  $type\to array\ punc\_square\_left\ period\ punc\_square\_right\ of\ basic\_type$
+
+  将$idStack$中记录维度和类型的信息合并。
 
 - 过程及函数使用
+
+
+  
+
 
 - read与write处理

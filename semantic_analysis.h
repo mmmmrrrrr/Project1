@@ -28,7 +28,8 @@ struct DataType
 };
 enum IdType : int
 {
-	_constant = 1,
+	_none=0,
+	_constant,
 	_variable,
 	_procedure,
 	_function

@@ -9,7 +9,7 @@ IdTable *nowIdTable;
 queue<Id> constRecord;
 vector<vector<Id>> rlistRecord;
 vector<vector<Id>> wlistRecord;
-map<pair<string,string>,Id>nameToArray;
+map<pair<string, string>, Id> nameToArray;
 
 Id getConst()
 {
@@ -30,12 +30,14 @@ vector<Id> getWlist()
 	wlistRecord.pop_back();
 	return t;
 }
-Id getArray(string funName,string arrayName){
-	if(nameToArray.find(make_pair(funName,arrayName))==nameToArray.end()){
-		cerr<<"getArray can't find!!!"<<endl;
+Id getArray(string funName, string arrayName)
+{
+	if (nameToArray.find(make_pair(funName, arrayName)) == nameToArray.end())
+	{
+		cerr << "getArray can't find!!!" << endl;
 		exit(0);
 	}
-	return nameToArray[make_pair(funName,arrayName)];
+	return nameToArray[make_pair(funName, arrayName)];
 }
 
 void reportError(string errInformation, token t)
@@ -67,7 +69,7 @@ Id searchId(string name)
 Id searchRootId(string name)
 {
 	IdTable *t = nowIdTable;
-	for(;t->father!=NULL;t=t->father)
+	for (; t->father != NULL; t = t->father)
 		;
 	if (t->nameToId.find(name) != t->nameToId.end())
 		return t->nameToId[name];
@@ -80,9 +82,10 @@ bool insert_id(Id id)
 	if (nowIdTable->nameToId.find(id.name) != nowIdTable->nameToId.end())
 		return 0;
 	nowIdTable->nameToId[id.name] = id;
-	if(id.idType==_variable && id.dataType.dimension){
-		nameToArray[make_pair(nowIdTable->funName,id.name)]=id;
-		cerr<<"add map "<<nowIdTable->funName<<" "<<id.name<<endl;
+	if (id.idType == _variable && id.dataType.dimension)
+	{
+		nameToArray[make_pair(nowIdTable->funName, id.name)] = id;
+		cerr << "add map " << nowIdTable->funName << " " << id.name << endl;
 	}
 	return 1;
 } //返回1表示正确插入，返回0表示已经有重复的标识符
@@ -91,7 +94,7 @@ void location(string funName)
 	auto t = nowIdTable;
 	nowIdTable = new IdTable;
 	nowIdTable->father = t;
-	nowIdTable->funName=funName;
+	nowIdTable->funName = funName;
 } //定位
 void relocation()
 {
@@ -248,7 +251,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 					return;
 				}
 			}
-			
+
 			idList.clear();
 			idStack.pop_back();
 			tokenSeqPos += 1;
@@ -342,13 +345,14 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			}
 			insert_id(temp);
 			location(temp.name);
-			for (auto j : paramList){
-				if(j.idType!=_variable){
-					cerr<<j.name<<"not a variable."<<endl;
+			for (auto j : paramList)
+			{
+				if (j.idType != _variable)
+				{
+					cerr << j.name << "not a variable." << endl;
 					exit(0);
 				}
 				insert_id(j);
-
 			}
 			//parameter insert id table.
 			paramList.clear();
@@ -389,7 +393,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			for (auto j : idList)
 			{
 				//cout << "idList.dataType.basicType=" << j.dataType.basicType << endl;
-				j.idType=_variable;
+				j.idType = _variable;
 				paramList.push_back(j);
 			}
 			idList.clear();
@@ -400,7 +404,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			for (auto j : idList)
 			{
 				//cout << "idList.dataType.basicType=" << j.dataType.basicType << endl;
-				j.idType=_variable;
+				j.idType = _variable;
 				paramList.push_back(j);
 			}
 			idList.clear();
@@ -602,6 +606,9 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 				}
 				else
 					reportError("Wrong parameter type2 ", tokenSeq[tokenSeqPos]);
+				if(temp.paramList[j].dataType.param_type==_value&&exprListStack.back()[j].idType!=_variable){
+					reportError("use not variable to value parameter.",tokenSeq[tokenSeqPos]);
+				}
 			}
 			exprListStack.pop_back();
 			tokenSeqPos += 3;
@@ -634,6 +641,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			idStack.pop_back();
 			idStack.pop_back();
 			temp = temp1;
+			temp.idType=_none;
 			temp.dataType.basicType = _boolean;
 			idStack.push_back(temp);
 			break;
@@ -660,9 +668,10 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 				if (temp.dataType.basicType > 2)
 					reportError("not integer(real) type in add(sub).", tokenSeq[tokenSeqPos - 1]);
 			}
-			
+
 			idStack.pop_back();
 			idStack.pop_back();
+			temp.idType=_none;
 			idStack.push_back(temp);
 			opStack.pop_back();
 			break;
@@ -700,6 +709,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			}
 			idStack.pop_back();
 			idStack.pop_back();
+			temp.idType=_none;
 			idStack.push_back(temp);
 			opStack.pop_back();
 			break;
@@ -725,20 +735,24 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			}
 			for (int j = 0; j < temp.paramList.size(); ++j)
 			{
-				if (temp.paramList[j].dataType == exprListStack[exprListStack.size() - 1][j].dataType)
+				if (temp.paramList[j].dataType == exprListStack.back()[j].dataType)
 				{
 
-					if (temp.paramList[j].dataType.basicType < exprListStack[exprListStack.size() - 1][j].dataType.basicType)
+					if (temp.paramList[j].dataType.basicType < exprListStack.back()[j].dataType.basicType)
 					{
 						reportError("Wrong parameter type", tokenSeq[tokenSeqPos]);
 					}
 				}
 				else
 					reportError("Wrong parameter type", tokenSeq[tokenSeqPos]);
+				if(temp.paramList[j].dataType.param_type==_value&&exprListStack.back()[j].idType!=_variable){
+					reportError("use not variable to value parameter.",tokenSeq[tokenSeqPos]);
+				}
 			}
 			exprListStack.pop_back();
 			temp = temp1;
 			temp.dataType = searchRootId(tokenSeq[tokenSeqPos].content).retDataType;
+			temp.idType=_none;
 			idStack.push_back(temp);
 			tokenSeqPos += 3;
 			break;
@@ -752,6 +766,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			{
 				reportError("not boolean type in not.", tokenSeq[tokenSeqPos - 1]);
 			}
+			idStack.back().idType=_none;
 			tokenSeqPos += 1;
 			break;
 
@@ -760,6 +775,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			{
 				reportError("not integer(real) type in minus.", tokenSeq[tokenSeqPos - 1]);
 			}
+			idStack.back().idType=_none;
 			tokenSeqPos += 1;
 			break;
 
@@ -810,6 +826,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 
 		case 84: // num->fnum
 			temp = temp1;
+			temp.idType=_constant;
 			temp.dataType.basicType = _real;
 			idStack.push_back(temp);
 			tokenSeqPos += 1;
@@ -817,6 +834,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 
 		case 85: // num->digits
 			temp = temp1;
+			temp.idType=_constant;
 			temp.dataType.basicType = _integer;
 			temp.dataType.constVal = atoi(tokenSeq[tokenSeqPos].content.c_str());
 			idStack.push_back(temp);

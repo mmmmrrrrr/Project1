@@ -2,11 +2,10 @@
 program a;
 var
     b:integer;
-procedure gcd(var a:integer);
-const
-    b=1;
+function gcd(var a:integer):integer;
 begin
-    b:=a;
+    if a=0 then gcd:=1
+    else gcd:=a*gcd(a-1);
 end;
 begin
     gcd(b);
