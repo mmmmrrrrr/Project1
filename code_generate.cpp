@@ -4,11 +4,14 @@
 #include <cstring>
 #include <fstream>
 #include <vector>
-#include<string>
+#include <queue>
+#include <string>
 #pragma execution_character_set("utf-8")
 using namespace std;
 
 int token_seq_pos1;
+queue<string> str3;
+vector<string> str5;
 
 bool isInt(string str)
 {
@@ -305,11 +308,12 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 	Id id3;
 	int a, b, flag, i, j;
 	int m;
-	string sa, sb, sc;
+	string sa, sb, sc, sd;
 	string idtype;
 	string arrayName = "";
-	string funName;
-	string str1;
+	string funName,fun_name;
+	string str1,str2;
+	vector<string> str4;
 	int size, size1;
 	while (s < 0 && !product_seq.empty())
 	{
@@ -341,10 +345,81 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		return res;
 
 	case 4: //program_body->const_declarations var_declarations subprogram_declarations compound_statement
+		str2 = generateCode(product_seq, token_seq, token_seq_pos);
+		str = splitString(str2, '[');
+		size = str.size() - 1;
+		i = 0;
+		funName = "";
+		while (i < size)
+		{
+			arrayName = "";
+			size1 = str[i].size();
+			j = 1;
+			while (str[i][size1 - j] >= 'a' && str[i][size1 - j] <= 'z' || str[i][size1 - j] >= 'A' && str[i][size1 - j] <= 'Z' || str[i][size1 - j] >= '0' && str[i][size1 - j] <= '9')
+			{
+				arrayName = str[i][size1 - j] + arrayName;
+				j++;
+			}
+			//cout << "arrayName=" << arrayName << endl;
+			id3 = getArray(funName, arrayName);
+			//cout << "id3.dataType.dimension=" << id3.dataType.dimension << endl;
+			if (id3.dataType.dimension == 1)
+			{
+				m = i + 1;
+				sa = splitString(str[m], ']')[0];
+				//cout << "sa=" << sa << endl;
+				if (isInt(sa))
+				{
+					a = atoi(sa.c_str());
+					b = id3.dataType.lowerBound.back();
+					id3.dataType.lowerBound.pop_back();
+					a = a - b + 1;
+					sb = std::to_string(a);
+					str1 = str[m];
+					str[m] = str1.replace(str1.find(sa), sa.size(), sb);
+				}
+				i++;
+			}
+			if (id3.dataType.dimension == 2)
+			{
+				m = i + 2;
+				sa = splitString(str[m], ']')[0];
+				if (isInt(sa))
+				{
+					a = atoi(sa.c_str());
+					b = id3.dataType.lowerBound.back();
+					id3.dataType.lowerBound.pop_back();
+					a = a - b + 1;
+					sb = std::to_string(a);
+					str1 = str[m];
+					str[m] = str1.replace(str1.find(sa), sa.size(), sb);
+				}
+				m = i + 1;
+				sa = splitString(str[m], ']')[0];
+				if (isInt(sa))
+				{
+					a = atoi(sa.c_str());
+					b = id3.dataType.lowerBound.back();
+					id3.dataType.lowerBound.pop_back();
+					a = a - b + 1;
+					sb = std::to_string(a);
+					str1 = str[m];
+					str[m] = str1.replace(str1.find(sa), sa.size(), sb);
+				}
+				i = i + 2;
+			}
+		}
+		str2 = "";
+		for (i = 0; i < size; i++)
+		{
+			str2 = str2 + str[i] + "[";
+		}
+		str2 = str2 + str[i];
+		//cout << "str2=" << str2 << endl;
 		res = generateCode(product_seq, token_seq, token_seq_pos) +
 			generateCode(product_seq, token_seq, token_seq_pos) +
 			generateCode(product_seq, token_seq, token_seq_pos) + "int main()\n{\n" +
-			generateCode(product_seq, token_seq, token_seq_pos) + "return 0;\n}";
+			str2 + "return 0;\n}";
 		return res;
 
 	case 5: //idlist->idlist , id
@@ -478,77 +553,116 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		return "";
 
 	case 29: //subprogram->subprogram_head punc_semicolon subprogram_body
-		res = generateCode(product_seq, token_seq, token_seq_pos) + "" +
-			generateCode(product_seq, token_seq, token_seq_pos) + "";
+		//res = generateCode(product_seq, token_seq, token_seq_pos) + "" +
+			//generateCode(product_seq, token_seq, token_seq_pos) + "";
 		//cout << "res=" << res << endl;
-		/*str = splitString(res, '[');
-		size = str.size() - 1;
-		i = 0;
-		funName = splitString(splitString(res, ' ')[1], '(')[0];
-		while (i < size)
+		sa = generateCode(product_seq, token_seq, token_seq_pos);//子程序体 
+		str = splitString(sa, '[');
+		//cout << "str.size=" << str.size() << endl;
+		sd = generateCode(product_seq, token_seq, token_seq_pos);//子程序头 
+		//res = sb + sa;
+		//cout << "res=" << res << endl;
+		fun_name = splitString(splitString(sd, ' ')[1], '(')[0];
+		//cout <<"fun_name="<< fun_name << endl;
+		size = str5.size();
+		//cout << "str3_size=" << str3.size() << endl;
+		//cout << "str5_size=" << str5.size() << endl;
+		j = 0;
+		size1 = size;
+		while (j < size)
 		{
-			arrayName = "";
-			size1 = str[i].size();
-			j = 1;
-			while (str[i][size1 - j] >= 'a' && str[i][size1 - j] <= 'z' || str[i][size1 - j] >= 'A' && str[i][size1 - j] <= 'Z' || str[i][size1 - j] >= '0' && str[i][size1 - j] <= '9')
+			//arrayName = str5.back();
+			//str5.pop_back();
+			//cout << "str5[" << j << "]=" << str5[j] << endl;
+			id3 = getArray(fun_name, str5[j]);
+			if (id3.dataType.dimension == 2)
+				size1 += 1;
+			j++;
+		}
+		j = size1;
+		//cout << "size1=" << size1 << endl;
+		//cout << "str.size-1=" << str.size() - 1 << endl;
+		while (j<str.size()-1)
+		{
+			funName = "";
+			arrayName = str3.front();
+			//cout << "arrayName=" << arrayName << endl;
+			str3.pop();
+			i = 0;
+			while (i < size)
 			{
-				arrayName = str[i][size1 - j] + arrayName;
-				j++;
+				if (arrayName == str5[i])
+				{
+					//str6.pop_back();
+					funName = fun_name;
+					break;
+				}
+				i++;
 			}
-			cout << "funName=" << funName << endl;
-			cout << "arrayName=" << arrayName << endl;
+			//cout << "funName=" << funName << endl;
+			//cout << "arrayName=" << arrayName << endl;
 			id3 = getArray(funName, arrayName);
+			//cout << "id3.dataType.dimension=" << id3.dataType.dimension << endl;
 			if (id3.dataType.dimension == 1)
 			{
-				m = i + 1;
-				sa = splitString(str[m], ']')[0];
-				if (isInt(sa))
+				m = j + 1;
+				//cout << "m=" << m << endl;
+				sc = splitString(str[m], ']')[0];
+				if (isInt(sc))
 				{
-					a = atoi(sa.c_str());
+					a = atoi(sc.c_str());
 					b = id3.dataType.lowerBound.back();
 					id3.dataType.lowerBound.pop_back();
 					a = a - b + 1;
 					sb = std::to_string(a);
 					str1 = str[m];
-					str[m] = str1.replace(str1.find(sa), sa.size(), sb);
+					str[m] = str1.replace(str1.find(sc), sc.size(), sb);
+					//cout << "str[1]=" << str[m] << endl;
 				}
-					i++;
+				j++;
 			}
 			if (id3.dataType.dimension == 2)
 			{
-				m = i + 2;
-				sa = splitString(str[m], ']')[0];
-				if (isInt(sa))
+				m = j + 2;
+				sc = splitString(str[m], ']')[0];
+				if (isInt(sc))
 				{
-					a = atoi(sa.c_str());
+					a = atoi(sc.c_str());
 					b = id3.dataType.lowerBound.back();
 					id3.dataType.lowerBound.pop_back();
 					a = a - b + 1;
 					sb = std::to_string(a);
 					str1 = str[m];
-					str[m] = str1.replace(str1.find(sa), sa.size(), sb);
+					str[m] = str1.replace(str1.find(sc), sc.size(), sb);
+					//cout << "str[" << m << "]=" << str[m] << endl;
 				}
-				m = i + 1;
-				sa = splitString(str[m], ']')[0];
-				if (isInt(sa))
+				m = j + 1;
+				sc = splitString(str[m], ']')[0];
+				if (isInt(sc))
 				{
-					a = atoi(sa.c_str());
+					a = atoi(sc.c_str());
 					b = id3.dataType.lowerBound.back();
 					id3.dataType.lowerBound.pop_back();
-					a = a - b;
+					a = a - b + 1;
 					sb = std::to_string(a);
 					str1 = str[m];
-					str[m] = str1.replace(str1.find(sa), sa.size(), sb);
+					str[m] = str1.replace(str1.find(sc), sc.size(), sb);
+					//cout << "str["<<m<<"]=" << str[m] << endl;
 				}
-				i = i + 2;
+				j = j + 2;
+				//cout << "j=" << j << endl;
 			}
 		}
-		res = "";
-		for (i = 0; i < size; i++)
+		sa = "";
+		for (i = 0; i < str.size()-1; i++)
 		{
-			res =  res + str[i] + "[";
+			sa = sa + str[i] + "[";
 		}
-		res = res + str[i];*/
+		sa = sa + str[i];
+		//cout << "sa=" << sa << endl;
+		//cout << "sb=" << sb << endl;
+		res = sd + sa;
+		//cout << "res=" << res << endl;
 		if (res.substr(0, 4) != "void")
 		{
 			sa = splitString(res, ' ')[0];
@@ -646,18 +760,12 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 	case 40: //subprogram_body->const_declarations var_declarations compound_statement
 		sb = "\n{\n";
 		//cout << "sb="<<sb;
-		res = sb + generateCode(product_seq, token_seq, token_seq_pos) +
-			generateCode(product_seq, token_seq, token_seq_pos) +
-			generateCode(product_seq, token_seq, token_seq_pos) + "}\n";
-		return res;
-
-	case 41: //compound_statement->begin statement_list end
-		res = "" + generateCode(product_seq, token_seq, token_seq_pos) + "";
-		//cout << "res=" << res << endl;
-		str = splitString(res, '[');
+		sa = generateCode(product_seq, token_seq, token_seq_pos);
+		str = splitString(sa, '[');
+		//cout << "sa=" << sa<<endl;
 		size = str.size() - 1;
+		//cout << "size=" << size << endl;
 		i = 0;
-		funName = "";
 		while (i < size)
 		{
 			arrayName = "";
@@ -668,61 +776,42 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 				arrayName = str[i][size1 - j] + arrayName;
 				j++;
 			}
-			//cout << "arrayName=" << arrayName << endl;
-			id3 = getArray(funName, arrayName);
-			//cout << "id3.dataType.dimension=" << id3.dataType.dimension << endl;
-			if (id3.dataType.dimension == 1)
+			if (arrayName != "")
 			{
-				m = i + 1;
-				sa = splitString(str[m], ']')[0];
-				cout << "sa=" << sa << endl;
-				if (isInt(sa))
-				{
-					a = atoi(sa.c_str());
-					b = id3.dataType.lowerBound.back();
-					id3.dataType.lowerBound.pop_back();
-					a = a - b + 1;
-					sb = std::to_string(a);
-					str1 = str[m];
-					str[m] = str1.replace(str1.find(sa), sa.size(), sb);
-				}
-					i++;
+				str3.push(arrayName);
 			}
-			if (id3.dataType.dimension == 2)
-			{
-				m = i + 2;
-				sa = splitString(str[m], ']')[0];
-				if (isInt(sa))
-				{
-					a = atoi(sa.c_str());
-					b = id3.dataType.lowerBound.back();
-					id3.dataType.lowerBound.pop_back();
-					a = a - b + 1;
-					sb = std::to_string(a);
-					str1 = str[m];
-					str[m] = str1.replace(str1.find(sa), sa.size(), sb);
-				}
-				m = i + 1;
-				sa = splitString(str[m], ']')[0];
-				if (isInt(sa))
-				{
-					a = atoi(sa.c_str());
-					b = id3.dataType.lowerBound.back();
-					id3.dataType.lowerBound.pop_back();
-					a = a - b + 1;
-					sb = std::to_string(a);
-					str1 = str[m];
-					str[m] = str1.replace(str1.find(sa), sa.size(), sb);
-				}
-				i = i + 2;
-			}
+			i++;
 		}
-		res = "";
-		for (i = 0; i < size; i++)
+		sc = generateCode(product_seq, token_seq, token_seq_pos);
+		//cout << "sc=" << sc << endl;
+		str4 = splitString(sc, '[');
+		size = str4.size() - 1;
+		i = 0;
+		while (i < size)
 		{
-			res = res + str[i] + "[";
+			arrayName = "";
+			size1 = str4[i].size();
+			j = 1;
+			while (str4[i][size1 - j] >= 'a' && str4[i][size1 - j] <= 'z' || str4[i][size1 - j] >= 'A' && str4[i][size1 - j] <= 'Z' || str4[i][size1 - j] >= '0' && str4[i][size1 - j] <= '9')
+			{
+				arrayName = str4[i][size1 - j] + arrayName;
+				j++;
+			}
+			if (arrayName != "")
+			{
+				str5.push_back(arrayName);
+			}
+			i++;
 		}
-		res = res + str[i];
+		res = sb + generateCode(product_seq, token_seq, token_seq_pos) +
+			sc + sa + "}\n";
+		//cout << "str3_size=" << str3.size() << endl;
+		//cout << "str5_size=" << str5.size() << endl;
+		return res;
+
+	case 41: //compound_statement->begin statement_list end
+		res = "" + generateCode(product_seq, token_seq, token_seq_pos) + "";
+		//cout << "res=" << res << endl;
 		return res;
 
 	case 42: //statement_list->statement_list punc_semicolon statement
