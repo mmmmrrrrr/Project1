@@ -1,0 +1,93 @@
+[I]>>>Read data from file:test.pas
+Syntax analysis Success！
+3:  program_head->program id
+program
+0:xxx
+exprListStackSize0
+8:  const_declarations->null
+b
+0:xxx
+exprListStackSize0
+6:  idlist->id
+b
+0:xxx
+exprListStackSize0
+21:  basic_type->integer
+integer
+1:1xxx
+exprListStackSize0
+19:  type->basic_type
+:
+1:1xxx
+exprListStackSize0
+18:  var_declaration->idlist punc_colon type
+:
+0:xxx
+exprListStackSize0
+15:  var_declarations->var var_declaration punc_semicolon
+var
+0:xxx
+exprListStackSize0
+28:  subprogram_declarations->null
+a
+0:xxx
+exprListStackSize0
+6:  idlist->id
+a
+0:xxx
+exprListStackSize0
+21:  basic_type->integer
+integer
+1:1xxx
+exprListStackSize0
+39:  value_parameter->idlist punc_colon basic_type
+:
+0:xxx
+exprListStackSize0
+38:  var_parameter->var value_parameter
+var
+0:xxx
+exprListStackSize0
+36:  parameter->var_parameter
+(
+0:xxx
+exprListStackSize0
+35:  parameter_list->parameter
+(
+0:xxx
+exprListStackSize0
+32:  formal_parameter->punc_round_left parameter_list punc_round_right
+(
+0:xxx
+exprListStackSize0
+30:  subprogram_head->procedure id formal_parameter
+procedure
+0:xxx
+exprListStackSize0
+85:  num->digits
+1
+1:1xxx
+exprListStackSize0
+13:  const_value->num
+b
+1:1xxx
+exprListStackSize0
+10:  const_declaration->id relop_e const_value
+b
+0:xxx
+exprListStackSize0
+7:  const_declarations->const const_declaration punc_semicolon
+const
+0:xxx
+exprListStackSize0
+16:  var_declarations->null
+b
+0:xxx
+exprListStackSize0
+56:  id_varpart->null
+b
+1:0xxx
+exprListStackSize0
+54:  variable->id id_varpart
+b
+Syntax error:    <line 9>    "b"    Incorrect use of non variables.

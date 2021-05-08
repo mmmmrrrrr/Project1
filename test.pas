@@ -1,8 +1,13 @@
-program qsort(input,output);
 
-
+program a;
+var
+    b:integer;
+procedure gcd(var a:integer);
+const
+    b=1;
 begin
-	
-{jgoiudfhgdrfsohgjedrou}
-        
+    b:=a;
+end;
+begin
+    gcd(b);
 end.

@@ -1,6 +1,6 @@
 #include "code_generate.h"
-#include<iostream>
-#include<algorithm>
+#include <iostream>
+#include <algorithm>
 #include <cstring>
 #include <fstream>
 #include <vector>
@@ -10,8 +10,42 @@
 using namespace std;
 
 int token_seq_pos1;
-queue<string> str3;
-vector<string> str5;
+
+string arraySub(string funName, string &s, int &pos)
+{
+	string re = "";
+	for (; pos < s.size(); ++pos)
+	{
+		if (s[pos] == '[')
+		{
+			string arrayName = "";
+			for (int j = pos - 1; j >= 0; --j)
+			{
+				if (('a' <= s[j] && s[j] <= 'z') || ('A' <= s[j] && s[j] <= 'Z') || ('0' <= s[j] && s[j] <= '9') || s[j] == '_')
+					arrayName.push_back(s[j]);
+				else
+					break;
+			}
+			reverse(arrayName.begin(), arrayName.end());
+			Id arrayId = getArray(funName, arrayName);
+			for (auto i : arrayId.dataType.lowerBound)
+			{
+				++pos;
+				re += '[' + arraySub(funName, s, pos) + '-' + to_string(i) + ']';
+			}
+			--pos;
+		}
+		else if (s[pos] == ']')
+		{
+			++pos;
+			break;
+		}
+
+		else
+			re.push_back(s[pos]);
+	}
+	return re;
+}
 
 bool isInt(string str)
 {
@@ -297,7 +331,7 @@ int calculate(int num)
 	return token_seq_pos1;
 }
 
-string generateCode(vector<int>& product_seq, vector<token>& token_seq, int token_seq_pos)
+string generateCode(vector<int> &product_seq, vector<token> &token_seq, int token_seq_pos)
 {
 	int s = -1;
 	string res = "";
@@ -306,19 +340,19 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 	vector<string> str;
 	Id id1;
 	Id id3;
-	int a, b, flag, i, j;
+	int a, b, flag, i, j, strLen;
 	int m;
 	string sa, sb, sc, sd;
 	string idtype;
-	string arrayName = "";
-	string funName,fun_name;
-	string str1,str2;
+	string arrayName;
+	string funName, fun_name;
+	string str1, str2;
 	vector<string> str4;
 	int size, size1;
 	while (s < 0 && !product_seq.empty())
 	{
 		s = product_seq.back();
-		//cout << "s=" << s << endl;
+		//cerr << "s=" << s << endl;
 		product_seq.pop_back();
 	}
 	token_seq_pos = calculate(s);
@@ -328,16 +362,16 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		return generateCode(product_seq, token_seq, token_seq_pos);
 	case 1:
 		//1:programStruct->program_head ; program_body .
-		//cout << "token_seq_pos = " << token_seq_pos << endl;
+		//cerr << "token_seq_pos = " << token_seq_pos << endl;
 		res = "#include <stdio.h>\n\n" +
-			generateCode(product_seq, token_seq, token_seq_pos) + "" +
-			generateCode(product_seq, token_seq, token_seq_pos);
+			  generateCode(product_seq, token_seq, token_seq_pos) + "" +
+			  generateCode(product_seq, token_seq, token_seq_pos);
 		return res;
 
 	case 2: //program_head->program id (idlist)
 		token_seq[token_seq_pos + 2].content;
-		//cout << "token_seq_pos = " << token_seq_pos << endl;
-		//cout << token_seq[token_seq_pos + 2].content << endl;
+		//cerr << "token_seq_pos = " << token_seq_pos << endl;
+		//cerr << token_seq[token_seq_pos + 2].content << endl;
 		generateCode(product_seq, token_seq, token_seq_pos);
 		return res;
 	case 3: // program_head->program id
@@ -345,81 +379,13 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		return res;
 
 	case 4: //program_body->const_declarations var_declarations subprogram_declarations compound_statement
-		str2 = generateCode(product_seq, token_seq, token_seq_pos);
-		str = splitString(str2, '[');
-		size = str.size() - 1;
-		i = 0;
-		funName = "";
-		while (i < size)
-		{
-			arrayName = "";
-			size1 = str[i].size();
-			j = 1;
-			while (str[i][size1 - j] >= 'a' && str[i][size1 - j] <= 'z' || str[i][size1 - j] >= 'A' && str[i][size1 - j] <= 'Z' || str[i][size1 - j] >= '0' && str[i][size1 - j] <= '9')
-			{
-				arrayName = str[i][size1 - j] + arrayName;
-				j++;
-			}
-			//cout << "arrayName=" << arrayName << endl;
-			id3 = getArray(funName, arrayName);
-			//cout << "id3.dataType.dimension=" << id3.dataType.dimension << endl;
-			if (id3.dataType.dimension == 1)
-			{
-				m = i + 1;
-				sa = splitString(str[m], ']')[0];
-				//cout << "sa=" << sa << endl;
-				if (isInt(sa))
-				{
-					a = atoi(sa.c_str());
-					b = id3.dataType.lowerBound.back();
-					id3.dataType.lowerBound.pop_back();
-					a = a - b + 1;
-					sb = std::to_string(a);
-					str1 = str[m];
-					str[m] = str1.replace(str1.find(sa), sa.size(), sb);
-				}
-				i++;
-			}
-			if (id3.dataType.dimension == 2)
-			{
-				m = i + 2;
-				sa = splitString(str[m], ']')[0];
-				if (isInt(sa))
-				{
-					a = atoi(sa.c_str());
-					b = id3.dataType.lowerBound.back();
-					id3.dataType.lowerBound.pop_back();
-					a = a - b + 1;
-					sb = std::to_string(a);
-					str1 = str[m];
-					str[m] = str1.replace(str1.find(sa), sa.size(), sb);
-				}
-				m = i + 1;
-				sa = splitString(str[m], ']')[0];
-				if (isInt(sa))
-				{
-					a = atoi(sa.c_str());
-					b = id3.dataType.lowerBound.back();
-					id3.dataType.lowerBound.pop_back();
-					a = a - b + 1;
-					sb = std::to_string(a);
-					str1 = str[m];
-					str[m] = str1.replace(str1.find(sa), sa.size(), sb);
-				}
-				i = i + 2;
-			}
-		}
-		str2 = "";
-		for (i = 0; i < size; i++)
-		{
-			str2 = str2 + str[i] + "[";
-		}
-		str2 = str2 + str[i];
-		//cout << "str2=" << str2 << endl;
+		sa = generateCode(product_seq, token_seq, token_seq_pos);
+		strLen = 0;
+		sa = arraySub("", sa, strLen);
 		res = generateCode(product_seq, token_seq, token_seq_pos) +
-			generateCode(product_seq, token_seq, token_seq_pos) +
-			generateCode(product_seq, token_seq, token_seq_pos) + "int main()\n{\n" +
-			str2 + "return 0;\n}";
+			  generateCode(product_seq, token_seq, token_seq_pos) +
+			  generateCode(product_seq, token_seq, token_seq_pos) + "int main()\n{\n" +
+			  sa + "return 0;\n}";
 		return res;
 
 	case 5: //idlist->idlist , id
@@ -479,8 +445,8 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 	case 17:													  //var_declaration->var_declaration punc_semicolon idlist punc_colon type
 		sb = generateCode(product_seq, token_seq, token_seq_pos); //type
 		sa = generateCode(product_seq, token_seq, token_seq_pos);
-		//cout << "sa=" << sa << endl;
-		//cout << "sb=" << sb << endl;
+		//cerr << "sa=" << sa << endl;
+		//cerr << "sb=" << sb << endl;
 		if (sb.find('[') == string::npos)
 		{
 			res = sb + " " + sa + ";\n";
@@ -498,8 +464,8 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 	case 18:													  //var_declaration->idlist punc_colon type
 		sb = generateCode(product_seq, token_seq, token_seq_pos); //type
 		sa = generateCode(product_seq, token_seq, token_seq_pos);
-		//cout << "sa=" << sa << endl;
-		//cout << "sb=" << sb << endl;
+		//cerr << "sa=" << sa << endl;
+		//cerr << "sb=" << sb << endl;
 		if (sb.find('[') == string::npos)
 		{
 			res = sb + " " + sa + ";\n";
@@ -546,129 +512,24 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 
 	case 27: //subprogram_declarations->subprogram_declarations subprogram punc_semicolon
 		res = generateCode(product_seq, token_seq, token_seq_pos) +
-			generateCode(product_seq, token_seq, token_seq_pos);
+			  generateCode(product_seq, token_seq, token_seq_pos);
 		return res;
 
 	case 28: //subprogram_declarations->null
 		return "";
 
 	case 29: //subprogram->subprogram_head punc_semicolon subprogram_body
-		//res = generateCode(product_seq, token_seq, token_seq_pos) + "" +
-			//generateCode(product_seq, token_seq, token_seq_pos) + "";
-		//cout << "res=" << res << endl;
-		sa = generateCode(product_seq, token_seq, token_seq_pos);//子程序体 
-		str = splitString(sa, '[');
-		//cout << "str.size=" << str.size() << endl;
-		sd = generateCode(product_seq, token_seq, token_seq_pos);//子程序头 
-		//res = sb + sa;
-		//cout << "res=" << res << endl;
-		fun_name = splitString(splitString(sd, ' ')[1], '(')[0];
-		//cout <<"fun_name="<< fun_name << endl;
-		size = str5.size();
-		//cout << "str3_size=" << str3.size() << endl;
-		//cout << "str5_size=" << str5.size() << endl;
-		j = 0;
-		size1 = size;
-		while (j < size)
-		{
-			//arrayName = str5.back();
-			//str5.pop_back();
-			//cout << "str5[" << j << "]=" << str5[j] << endl;
-			id3 = getArray(fun_name, str5[j]);
-			if (id3.dataType.dimension == 2)
-				size1 += 1;
-			j++;
-		}
-		j = size1;
-		//cout << "size1=" << size1 << endl;
-		//cout << "str.size-1=" << str.size() - 1 << endl;
-		while (j<str.size()-1)
-		{
-			funName = "";
-			arrayName = str3.front();
-			//cout << "arrayName=" << arrayName << endl;
-			str3.pop();
-			i = 0;
-			while (i < size)
-			{
-				if (arrayName == str5[i])
-				{
-					//str6.pop_back();
-					funName = fun_name;
-					break;
-				}
-				i++;
-			}
-			//cout << "funName=" << funName << endl;
-			//cout << "arrayName=" << arrayName << endl;
-			id3 = getArray(funName, arrayName);
-			//cout << "id3.dataType.dimension=" << id3.dataType.dimension << endl;
-			if (id3.dataType.dimension == 1)
-			{
-				m = j + 1;
-				//cout << "m=" << m << endl;
-				sc = splitString(str[m], ']')[0];
-				if (isInt(sc))
-				{
-					a = atoi(sc.c_str());
-					b = id3.dataType.lowerBound.back();
-					id3.dataType.lowerBound.pop_back();
-					a = a - b + 1;
-					sb = std::to_string(a);
-					str1 = str[m];
-					str[m] = str1.replace(str1.find(sc), sc.size(), sb);
-					//cout << "str[1]=" << str[m] << endl;
-				}
-				j++;
-			}
-			if (id3.dataType.dimension == 2)
-			{
-				m = j + 2;
-				sc = splitString(str[m], ']')[0];
-				if (isInt(sc))
-				{
-					a = atoi(sc.c_str());
-					b = id3.dataType.lowerBound.back();
-					id3.dataType.lowerBound.pop_back();
-					a = a - b + 1;
-					sb = std::to_string(a);
-					str1 = str[m];
-					str[m] = str1.replace(str1.find(sc), sc.size(), sb);
-					//cout << "str[" << m << "]=" << str[m] << endl;
-				}
-				m = j + 1;
-				sc = splitString(str[m], ']')[0];
-				if (isInt(sc))
-				{
-					a = atoi(sc.c_str());
-					b = id3.dataType.lowerBound.back();
-					id3.dataType.lowerBound.pop_back();
-					a = a - b + 1;
-					sb = std::to_string(a);
-					str1 = str[m];
-					str[m] = str1.replace(str1.find(sc), sc.size(), sb);
-					//cout << "str["<<m<<"]=" << str[m] << endl;
-				}
-				j = j + 2;
-				//cout << "j=" << j << endl;
-			}
-		}
-		sa = "";
-		for (i = 0; i < str.size()-1; i++)
-		{
-			sa = sa + str[i] + "[";
-		}
-		sa = sa + str[i];
-		//cout << "sa=" << sa << endl;
-		//cout << "sb=" << sb << endl;
-		res = sd + sa;
-		//cout << "res=" << res << endl;
+		res = generateCode(product_seq, token_seq, token_seq_pos) +
+			  generateCode(product_seq, token_seq, token_seq_pos);
+		sb = splitString(splitString(res, ' ')[1], '(')[0];
+		strLen = 0;
+		res = arraySub(sb, res, strLen);
 		if (res.substr(0, 4) != "void")
 		{
 			sa = splitString(res, ' ')[0];
-			//cout << "sa=" << sa << endl;
-			size= splitString(res, ' ')[0].size();
-			//cout << sa[size - 1] << endl;
+			//cerr << "sa=" << sa << endl;
+			size = splitString(res, ' ')[0].size();
+			//cerr << sa[size - 1] << endl;
 			sb = splitString(splitString(res, ' ')[1], '(')[0] + "_" + "returnVal";
 			if (sa == "short")
 				sa = "{\nshort " + sb + ";";
@@ -686,18 +547,19 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 				{
 					res = res.replace(res.find(sc), sc.size(), sa);
 					flag++;
-					//cout << "flag=" << flag << endl;
+					//cerr << "flag=" << flag << endl;
 				}
-				else break;
+				else
+					break;
 			}
 			flag = 0;
 			sb = splitString(splitString(res, ' ')[1], '(')[0] + "_" + "returnVal=";
-			sc = splitString(splitString(res, ' ')[1], '(')[0]+"=";
+			sc = splitString(splitString(res, ' ')[1], '(')[0] + "=";
 			while (res.find(sc) != string::npos)
 			{
 				res = res.replace(res.find(sc), sc.size(), sb);
 			}
-			sc= splitString(splitString(res, ' ')[1], '(')[0] + ";";
+			sc = splitString(splitString(res, ' ')[1], '(')[0] + ";";
 			sb = splitString(splitString(res, ' ')[1], '(')[0] + "_" + "returnVal;";
 			while (res.find(sc) != string::npos)
 			{
@@ -707,20 +569,22 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 			sb = "return " + sb + "\n}";
 			while (res.find(sc) != string::npos)
 			{
+				strLen=0;
 				if (flag == 0)
 				{
 					res = res.replace(res.find(sc), sc.size(), sb);
 					flag++;
 				}
-				else break;
+				else
+					break;
 			}
 		}
 		return res;
 
 	case 30: //subprogram_head->procedure id formal_parameter
 		res = "void " + token_seq[token_seq_pos + 2].content;
-		//cout << "token_seq_pos = " << token_seq_pos << endl;
-		//cout << "id=" << token_seq[token_seq_pos + 2].content << endl;
+		//cerr << "token_seq_pos = " << token_seq_pos << endl;
+		//cerr << "id=" << token_seq[token_seq_pos + 2].content << endl;
 		res += generateCode(product_seq, token_seq, token_seq_pos);
 		return res;
 
@@ -739,7 +603,7 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 
 	case 34: //parameter_list->parameter_list punc_semicolon parameter
 		res = generateCode(product_seq, token_seq, token_seq_pos) + "," +
-			generateCode(product_seq, token_seq, token_seq_pos);
+			  generateCode(product_seq, token_seq, token_seq_pos);
 		return res;
 
 	case 35: //parameter_list->parameter
@@ -758,65 +622,19 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		return res;
 
 	case 40: //subprogram_body->const_declarations var_declarations compound_statement
-		sb = "\n{\n";
-		//cout << "sb="<<sb;
-		sa = generateCode(product_seq, token_seq, token_seq_pos);
-		str = splitString(sa, '[');
-		//cout << "sa=" << sa<<endl;
-		size = str.size() - 1;
-		//cout << "size=" << size << endl;
-		i = 0;
-		while (i < size)
-		{
-			arrayName = "";
-			size1 = str[i].size();
-			j = 1;
-			while (str[i][size1 - j] >= 'a' && str[i][size1 - j] <= 'z' || str[i][size1 - j] >= 'A' && str[i][size1 - j] <= 'Z' || str[i][size1 - j] >= '0' && str[i][size1 - j] <= '9')
-			{
-				arrayName = str[i][size1 - j] + arrayName;
-				j++;
-			}
-			if (arrayName != "")
-			{
-				str3.push(arrayName);
-			}
-			i++;
-		}
-		sc = generateCode(product_seq, token_seq, token_seq_pos);
-		//cout << "sc=" << sc << endl;
-		str4 = splitString(sc, '[');
-		size = str4.size() - 1;
-		i = 0;
-		while (i < size)
-		{
-			arrayName = "";
-			size1 = str4[i].size();
-			j = 1;
-			while (str4[i][size1 - j] >= 'a' && str4[i][size1 - j] <= 'z' || str4[i][size1 - j] >= 'A' && str4[i][size1 - j] <= 'Z' || str4[i][size1 - j] >= '0' && str4[i][size1 - j] <= '9')
-			{
-				arrayName = str4[i][size1 - j] + arrayName;
-				j++;
-			}
-			if (arrayName != "")
-			{
-				str5.push_back(arrayName);
-			}
-			i++;
-		}
-		res = sb + generateCode(product_seq, token_seq, token_seq_pos) +
-			sc + sa + "}\n";
-		//cout << "str3_size=" << str3.size() << endl;
-		//cout << "str5_size=" << str5.size() << endl;
+		return "\n{\n" + generateCode(product_seq, token_seq, token_seq_pos) +
+			   generateCode(product_seq, token_seq, token_seq_pos) +
+			   generateCode(product_seq, token_seq, token_seq_pos) + "}\n";
 		return res;
 
 	case 41: //compound_statement->begin statement_list end
 		res = "" + generateCode(product_seq, token_seq, token_seq_pos) + "";
-		//cout << "res=" << res << endl;
+		//cerr << "res=" << res << endl;
 		return res;
 
 	case 42: //statement_list->statement_list punc_semicolon statement
 		res = generateCode(product_seq, token_seq, token_seq_pos) + "" +
-			generateCode(product_seq, token_seq, token_seq_pos) + "";
+			  generateCode(product_seq, token_seq, token_seq_pos) + "";
 		return res;
 
 	case 43: // statement_list->statement
@@ -824,7 +642,7 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 
 	case 44: //statement->variable assignop expression
 		res = generateCode(product_seq, token_seq, token_seq_pos) +
-			"=" + generateCode(product_seq, token_seq, token_seq_pos) + ";\n";
+			  "=" + generateCode(product_seq, token_seq, token_seq_pos) + ";\n";
 		return res;
 
 	case 45: // statement->procedure_call
@@ -838,16 +656,16 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 
 	case 47: // statement->if expression then statement else_part
 		res = "if(" + generateCode(product_seq, token_seq, token_seq_pos) + ") " +
-			generateCode(product_seq, token_seq, token_seq_pos) + "" +
-			generateCode(product_seq, token_seq, token_seq_pos);
+			  generateCode(product_seq, token_seq, token_seq_pos) + "" +
+			  generateCode(product_seq, token_seq, token_seq_pos);
 		return res;
 
 	case 48: // statement->for id assignop expression to expression do statement
 		sa = token_seq[token_seq_pos + 2].content;
-		//cout << "sa=" << sa << endl;
+		//cerr << "sa=" << sa << endl;
 		res = "for(" + sa + "=" +
-			generateCode(product_seq, token_seq, token_seq_pos) + ";" +
-			sa + "<=" + generateCode(product_seq, token_seq, token_seq_pos) + ";" + sa + "++) " + generateCode(product_seq, token_seq, token_seq_pos);
+			  generateCode(product_seq, token_seq, token_seq_pos) + ";" +
+			  sa + "<=" + generateCode(product_seq, token_seq, token_seq_pos) + ";" + sa + "++) " + generateCode(product_seq, token_seq, token_seq_pos);
 		return res;
 
 	case 49: // statement->read punc_round_left variable_list punc_round_right
@@ -856,7 +674,7 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		//{
 		//	sa = splitString(s, '[')[0];
 		//id1 = id.front();
-		//cout << "sb=" << sb << endl;
+		//cerr << "sb=" << sb << endl;
 		id = getRlist();
 		reverse(id.begin(), id.end());
 		while (!id.empty())
@@ -873,12 +691,12 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 		/*for (auto s : splitString(sb, ','))
 		{
 			sa = splitString(s, '[')[0];
-			cout << "sa1= "<< sa << " ";
+			cerr << "sa1= "<< sa << " ";
 			sa = splitString(sa, '(')[0];
 			id = getWlist()[i];
 			res += " " + type2Place(idtoType(id));
 			i++;
-			//cout << "idtype(sa)= " << id_type(sa) << " ";
+			//cerr << "idtype(sa)= " << id_type(sa) << " ";
 		}*/
 		id2 = getWlist();
 		reverse(id2.begin(), id2.end());
@@ -888,7 +706,7 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 			id2.pop_back();
 			res += " " + type2Place(idtoType(id1));
 		}
-		//cout << res << endl;
+		//cerr << res << endl;
 		res = "\"" + res.substr(1) + "\"" + replaceString("|" + sb, '|', ",");
 		return "printf(" + res + ");\n";
 
@@ -897,7 +715,7 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 
 	case 52: // variable_list->variable_list punc_comma variable
 		res = generateCode(product_seq, token_seq, token_seq_pos) +
-			"|" + generateCode(product_seq, token_seq, token_seq_pos);
+			  "|" + generateCode(product_seq, token_seq, token_seq_pos);
 		return res;
 
 	case 53: // variable_list->variable
@@ -933,7 +751,7 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 
 	case 61: // expression_list->expression_list punc_comma expression
 		res = generateCode(product_seq, token_seq, token_seq_pos) + "," +
-			generateCode(product_seq, token_seq, token_seq_pos);
+			  generateCode(product_seq, token_seq, token_seq_pos);
 		return res;
 
 	case 62: // expression_list->expression
@@ -945,8 +763,8 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 	case 65: // simple_expression->simple_expression addop term
 	case 67: // term->term mulop factor
 		return generateCode(product_seq, token_seq, token_seq_pos) + "" +
-			generateCode(product_seq, token_seq, token_seq_pos) + "" +
-			generateCode(product_seq, token_seq, token_seq_pos);
+			   generateCode(product_seq, token_seq, token_seq_pos) + "" +
+			   generateCode(product_seq, token_seq, token_seq_pos);
 
 	case 68: // term->factor
 	case 69: // factor->num
@@ -964,7 +782,7 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 
 	case 73: // factor->not factor
 		res = "!(" +
-			generateCode(product_seq, token_seq, token_seq_pos) + ")";
+			  generateCode(product_seq, token_seq, token_seq_pos) + ")";
 		return res;
 
 	case 74: // factor->addop_sub factor
@@ -1023,7 +841,7 @@ string generateCode(vector<int>& product_seq, vector<token>& token_seq, int toke
 	}
 	return "";
 }
-string generate_Code(vector<int>& product_seq, vector<token>& token_seq, int token_seq_pos)
+string generate_Code(vector<int> &product_seq, vector<token> &token_seq, int token_seq_pos)
 {
 	token_seq_pos1 = token_seq_pos;
 	return generateCode(product_seq, token_seq, token_seq_pos);

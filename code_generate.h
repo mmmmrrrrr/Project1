@@ -12,3 +12,4 @@ string replaceString(string s, char c, string r);//连接字符串
 int calculate(int num);//计算单词在单词序列中的位置
 string generateCode(vector<int>& product_seq, vector<token>& token_seq, int token_seq_pos);//生成C语言句子
 string generate_Code(vector<int>& product_seq, vector<token>& token_seq, int token_seq_pos);//生成目标代码
+string arraySub(string funName,string &s,int &pos);

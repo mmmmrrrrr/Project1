@@ -205,13 +205,13 @@ Grammar initGrammer()
 
 	//for (int i = 0; i < grammar.size(); i++)
 	//{
-	//	cout << i << " " << mark_words[grammar[i][0]] << "->";
+	//	cerr << i << " " << mark_words[grammar[i][0]] << "->";
 	//	for (int j = 1; j < grammar[i].size(); j++)
 	//	{
-	//		cout << mark_words[grammar[i][j]];
-	//		cout << " ";
+	//		cerr << mark_words[grammar[i][j]];
+	//		cerr << " ";
 	//	}
-	//	cout << endl;
+	//	cerr << endl;
 	//}
 
 	return grammar;
@@ -348,19 +348,19 @@ fset getFIRST(Grammar grammar)
 	}
 
 	//输出,方便debug
-	//cout << "***************** FIRST集 *****************" << endl;
+	//cerr << "***************** FIRST集 *****************" << endl;
 	//for (auto iter = first.begin(); iter != first.end(); ++iter)
 	//{
 	//	set<mark> value=iter->second;
 	//	//vector<mark> value;
-	//	cout << mark_words[iter->first] << " : ";
+	//	cerr << mark_words[iter->first] << " : ";
 	//	for (auto it = value.begin(); it != value.end(); it++)
 	//	{
-	//		cout << mark_words[*it] << " ";
+	//		cerr << mark_words[*it] << " ";
 	//	}
-	//	cout << endl;
+	//	cerr << endl;
 	//}
-	//cout << endl;
+	//cerr << endl;
 
 	return first;
 }
@@ -393,7 +393,7 @@ fset getFOLLOW(Grammar grammar, fset first)
 
 			//if (i == 47)
 			//{
-			//	cout << " aaa" << endl;
+			//	cerr << " aaa" << endl;
 			//}
 
 			for (int j = 1; j < current_line.size(); j++)
@@ -534,18 +534,18 @@ fset getFOLLOW(Grammar grammar, fset first)
 	}
 
 	//输出,方便debug
-	//cout << "***************** FOLLOW集 *****************" << endl;
+	//cerr << "***************** FOLLOW集 *****************" << endl;
 	//for (auto iter = follow.begin(); iter != follow.end(); ++iter)
 	//{
 	//	set<mark> value = iter->second;
-	//	cout << mark_words[iter->first] << " : ";
+	//	cerr << mark_words[iter->first] << " : ";
 	//	for (auto it = value.begin(); it != value.end(); it++)
 	//	{
-	//		cout << mark_words[*it] << " ";
+	//		cerr << mark_words[*it] << " ";
 	//	}
-	//	cout << endl;
+	//	cerr << endl;
 	//}
-	//cout << endl;
+	//cerr << endl;
 
 	return follow;
 }
@@ -563,8 +563,8 @@ LR_PredictTable getTable(Grammar grammar) //计算LR分析表
 	extend_closure(grammar, current_clo);
 	DFA.push_back(current_clo);
 
-	//cout << "***************** closure 0 *****************" << endl;
-	//cout << "S -> ·programstruct" << endl;
+	//cerr << "***************** closure 0 *****************" << endl;
+	//cerr << "S -> ·programstruct" << endl;
 
 	int count = 1;						 //当前闭包个数，用来决定下一个的编号
 	for (int I = 0; I < DFA.size(); I++) //I 表示当前闭包是I0,I1,I2....
@@ -668,22 +668,22 @@ LR_PredictTable getTable(Grammar grammar) //计算LR分析表
 					go.push_back(tem); //go(I,nextone)=j
 
 					//输出,方便debug
-					//cout << "***************** closure " << count << " *****************" << endl;
+					//cerr << "***************** closure " << count << " *****************" << endl;
 					//for (int k = 0; k < new_closure.sentences.size(); k++)
 					//{
 					//	for (int j = 0; j < new_closure.sentences[k].size(); j++)
 					//	{
 					//		if (j == 1)
-					//			cout << "->";
+					//			cerr << "->";
 					//		if (j == new_closure.point_pos[k])
-					//			cout << "·";
-					//		cout << mark_words[new_closure.sentences[k][j]] << " ";
+					//			cerr << "·";
+					//		cerr << mark_words[new_closure.sentences[k][j]] << " ";
 					//	}
 					//	if (new_closure.point_pos[k] == new_closure.sentences[k].size())
-					//		cout << "·";
-					//	cout << endl;
+					//		cerr << "·";
+					//	cerr << endl;
 					//}
-					//cout << endl;
+					//cerr << endl;
 
 					count++;
 				}
@@ -744,14 +744,14 @@ LR_PredictTable getTable(Grammar grammar) //计算LR分析表
 	}
 
 	//打印预测分析表
-	//cout << "************************* 预测分析表 *************************" << endl;
+	//cerr << "************************* 预测分析表 *************************" << endl;
 	//for (int i = 0; i < DFA.size(); i++)
 	//{
 	//	for (int j = 0; j < (factor + 1); j++)
 	//	{
-	//		cout << LRtable[i][j] << " ";
+	//		cerr << LRtable[i][j] << " ";
 	//	}
-	//	cout << endl;
+	//	cerr << endl;
 	//}
 
 	return LRtable;
@@ -893,10 +893,10 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 
 		if (now_mark == -1) //词法分析识别到的错误
 		{
-			cout << "Lexical error:\t";
-			cout << "<line " << now_line << ">\t";
-			cout << "\"" << now_content << "\"\t";
-			cout << "This is an illegal mark." << endl;
+			cerr << "Lexical error:\t";
+			cerr << "<line " << now_line << ">\t";
+			cerr << "\"" << now_content << "\"\t";
+			cerr << "This is an illegal mark." << endl;
 			continue;
 		}
 
@@ -918,11 +918,11 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 			{
 				if (no_error)
 				{
-					cout << "Syntax analysis Success！" << endl;
+					cerr << "Syntax analysis Success！" << endl;
 				}
 				else
 				{
-					cout << "Syntax analysis Failed! " << endl;
+					cerr << "Syntax analysis Failed! " << endl;
 				}
 				reduces.push_back(0);
 				break;
@@ -970,22 +970,22 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 
 			if (now_mark == EOF_)
 			{
-				cout << "Syntax analysis Failed! " << endl;
+				cerr << "Syntax analysis Failed! " << endl;
 				break;
 			}
 
-			cout << "Syntax error:\t";
-			cout << "<line " << now_line << ">\t";
-			cout << "\"" << now_content << "\"\t";
+			cerr << "Syntax error:\t";
+			cerr << "<line " << now_line << ">\t";
+			cerr << "\"" << now_content << "\"\t";
 			if (now_mark == id)
-				cout << "This id is redundant or a symbol is missing nearby." << endl;
+				cerr << "This id is redundant or a symbol is missing nearby." << endl;
 			else if (now_mark == mulop_div || now_mark == mulop_mod || now_mark == punc_semicolon || now_mark == assignop ||
 					 now_mark == mulop_mul || now_mark == mulop_divide || now_mark == addop_add || now_mark == addop_sub)
-				cout << "This symbol is redundant or an operand is missing nearby." << endl;
+				cerr << "This symbol is redundant or an operand is missing nearby." << endl;
 			else if (now_mark == punc_square_left || now_mark == punc_square_right || now_mark == punc_round_left || now_mark == punc_round_right)
-				cout << "Parenthesis mismatch." << endl;
+				cerr << "Parenthesis mismatch." << endl;
 			else
-				cout << "This mark is redundant" << endl;
+				cerr << "This mark is redundant" << endl;
 			exit(1);
 		}
 	}
