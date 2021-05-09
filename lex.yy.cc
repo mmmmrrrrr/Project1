@@ -1020,7 +1020,7 @@ YY_RULE_SETUP
 {
 	if(yyleng > 32)
 	{
-		printf("Error! The length of this number is too long!\n");
+		cerr<<"Error! The length of this number is too long!\n";
 		enum Code code = error_;print_f(code,yytext,yyleng,yyout);
 		exit(0);
 	} 
@@ -1033,7 +1033,7 @@ YY_RULE_SETUP
 {
 	if(yyleng > 32)
 	{
-		printf("Error! The length of this number is too long!\n");
+		cerr<<"Error! The length of this number is too long!\n";
 		enum Code code = error_;print_f(code,yytext,yyleng,yyout);
 		exit(0);
 	} 
@@ -1066,7 +1066,7 @@ YY_RULE_SETUP
 {
 	/*检查长度是否超出范围*/
 	if(yyleng > 32){
-		printf("Error! The length of this idetifier is too long!\n");
+		cerr<<"Error! The length of this idetifier is too long!\n";
 		enum Code code = error_;print_f(code,yytext,yyleng,yyout);
 		exit(0);
 	}

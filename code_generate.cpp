@@ -519,11 +519,13 @@ string generateCode(vector<int> &product_seq, vector<token> &token_seq, int toke
 		return "";
 
 	case 29: //subprogram->subprogram_head punc_semicolon subprogram_body
-		res = generateCode(product_seq, token_seq, token_seq_pos) +
-			  generateCode(product_seq, token_seq, token_seq_pos);
+		res = generateCode(product_seq, token_seq, token_seq_pos) + generateCode(product_seq, token_seq, token_seq_pos);
 		sb = splitString(splitString(res, ' ')[1], '(')[0];
+		sa = splitString(res, '\a')[1];
+
 		strLen = 0;
-		res = arraySub(sb, res, strLen);
+		sa = arraySub(sb, sa, strLen);
+		res = splitString(res, '\a')[0] + sa;
 		if (res.substr(0, 4) != "void")
 		{
 			sa = splitString(res, ' ')[0];
@@ -569,7 +571,7 @@ string generateCode(vector<int> &product_seq, vector<token> &token_seq, int toke
 			sb = "return " + sb + "\n}";
 			while (res.find(sc) != string::npos)
 			{
-				strLen=0;
+				strLen = 0;
 				if (flag == 0)
 				{
 					res = res.replace(res.find(sc), sc.size(), sb);
@@ -623,8 +625,7 @@ string generateCode(vector<int> &product_seq, vector<token> &token_seq, int toke
 
 	case 40: //subprogram_body->const_declarations var_declarations compound_statement
 		return "\n{\n" + generateCode(product_seq, token_seq, token_seq_pos) +
-			   generateCode(product_seq, token_seq, token_seq_pos) +
-			   generateCode(product_seq, token_seq, token_seq_pos) + "}\n";
+			   generateCode(product_seq, token_seq, token_seq_pos) + "\a" + generateCode(product_seq, token_seq, token_seq_pos) + "}\n";
 		return res;
 
 	case 41: //compound_statement->begin statement_list end

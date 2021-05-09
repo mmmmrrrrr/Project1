@@ -175,25 +175,25 @@ div  {enum Code code = mulop_div; print_f(code,yytext,yyleng,yyout);}
 {digits} {
 	if(yyleng > 32)
 	{
-		printf("Error! The length of this number is too long!\n");
+		//printf("Error! The length of this number is too long!\n");
 		enum Code code = error_;print_f(code,yytext,yyleng,yyout);
-		exit(0);
+		//exit(0);
 	} 
 	enum Code code = digits; print_f(code,yytext,yyleng,yyout);
 }
 {fnum} {
 	if(yyleng > 32)
 	{
-		printf("Error! The length of this number is too long!\n");
+		//printf("Error! The length of this number is too long!\n");
 		enum Code code = error_;print_f(code,yytext,yyleng,yyout);
-		exit(0);
+		//exit(0);
 	} 
 	enum Code code = fnum; print_f(code,yytext,yyleng,yyout);
 }
 {letter} {
 	if(yyleng > 3){
 		/*char类型  长度为3*/
-		printf("The length of char must be 1.");
+		//printf("The length of char must be 1.");
 		enum Code code = error_; print_f(code,yytext,yyleng,yyout);
 	}
 	enum Code code = letter; print_f(code,yytext,yyleng,yyout);
@@ -205,9 +205,9 @@ div  {enum Code code = mulop_div; print_f(code,yytext,yyleng,yyout);}
 {id} {
 	/*检查长度是否超出范围*/
 	if(yyleng > 32){
-		printf("Error! The length of this idetifier is too long!\n");
+		//printf("Error! The length of this idetifier is too long!\n");
 		enum Code code = error_;print_f(code,yytext,yyleng,yyout);
-		exit(0);
+		//exit(0);
 	}
 	enum Code code = id; print_f(code,yytext,yyleng,yyout);
 }
