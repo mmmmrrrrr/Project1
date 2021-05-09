@@ -37,7 +37,7 @@ end;
         ys:=0;
         for i:=1 to n do begin
             zd:=zd+cntL[i] mod 2;
-            zs:=zs+cntL[i] / 2;
+            zs:=zs+cntL[i] div 2;
         end;
         for i:=1 to n do begin
             yd:=yd+cntR[i] mod 2;

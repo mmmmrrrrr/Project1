@@ -1,10 +1,8 @@
 program testLex(input, output);
-const 	
-	ch = 'hwqywu';
 var
 	i, j, tmp, size: integer;
 	list:array[0..1000] of integer;
-
+	{wiwqkhjk62?P@!@@8}}}}
 begin
     for i := 1 to size-1 do
 	for j := 1 to i do
@@ -16,5 +14,5 @@ begin
 	    end;
 
     for i :=1 to size do
-	write(list[I]);
+	write(list[i])
 end.

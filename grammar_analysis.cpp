@@ -897,6 +897,7 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 			cerr << "<line " << now_line << ">\t";
 			cerr << "\"" << now_content << "\"\t";
 			cerr << "This is an illegal mark." << endl;
+			exit(0);
 			continue;
 		}
 
@@ -986,7 +987,7 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 				cerr << "Parenthesis mismatch." << endl;
 			else
 				cerr << "This mark is redundant" << endl;
-			exit(1);
+			exit(0);
 		}
 	}
 

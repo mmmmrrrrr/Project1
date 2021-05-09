@@ -37,7 +37,7 @@ Id getArray(string funName, string arrayName)
 	{
 		if (nameToArray.find(make_pair("", arrayName)) == nameToArray.end())
 		{
-			cerr << "getArray can't find "<<arrayName<<" in \""<<funName<< "\" !!!" << endl;
+			cerr << "getArray can't find " << arrayName << " in \"" << funName << "\" !!!" << endl;
 			exit(0);
 		}
 		else
@@ -48,7 +48,7 @@ Id getArray(string funName, string arrayName)
 
 void reportError(string errInformation, token t)
 {
-	cerr << "Syntax error:"
+	cerr << "Semantic error:"
 		 << "    <line " << t.line << ">    \"" << t.content << "\"    " << errInformation;
 	exit(0);
 }
@@ -91,7 +91,7 @@ bool insert_id(Id id)
 	if (id.idType == _variable && id.dataType.dimension)
 	{
 		nameToArray[make_pair(nowIdTable->funName, id.name)] = id;
-		cerr << "add map " << nowIdTable->funName << " " << id.name << endl;
+		//cerr << "add map " << nowIdTable->funName << " " << id.name << endl;
 	}
 	return 1;
 } //返回1表示正确插入，返回0表示已经有重复的标识符
@@ -120,19 +120,23 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 	string operator_stack_top;
 	for (auto i : productSeq)
 	{
+		/*
 		cerr << i << ": " << numToProduct[i] << endl;
 		if (i)
 			cerr << tokenSeq[tokenSeqPos].content << endl;
+		*/
 
 		switch (i)
 		{
 		case 0: // S->programstruct
 			relocation();
-			cerr << tokenSeqPos << ' ' << tokenSeq.size() << endl;
+			//cerr << tokenSeqPos << ' ' << tokenSeq.size() << endl;
 			if (tokenSeqPos != tokenSeq.size())
 				cerr << "Token not use out." << endl;
+			/*
 			else
 				cerr << "Token use out." << endl;
+			*/
 			return;
 			break;
 
@@ -349,16 +353,26 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 				//cerr << "j.dataType.basicType=" << j.dataType.basicType << endl;
 				temp.paramList.push_back({j.name, j.dataType});
 			}
-			insert_id(temp);
+			if (!insert_id(temp))
+			{
+				reportError("repeated definition", tokenSeq[tokenSeqPos]);
+				return;
+			}
 			location(temp.name);
 			for (auto j : paramList)
 			{
+				/*
 				if (j.idType != _variable)
 				{
 					cerr << j.name << "not a variable." << endl;
 					exit(0);
 				}
-				insert_id(j);
+				*/
+				if (!insert_id(j))
+				{
+					reportError("repeated definition", tokenSeq[tokenSeqPos]);
+					return;
+				}
 			}
 			//parameter insert id table.
 			paramList.clear();
@@ -372,16 +386,28 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			temp.retDataType = idStack[idStack.size() - 1].dataType;
 			for (auto j : paramList)
 				temp.paramList.push_back({j.name, j.dataType});
-			insert_id(temp);
+			if (!insert_id(temp))
+			{
+				reportError("repeated definition", tokenSeq[tokenSeqPos]);
+				return;
+			}
 			location(temp.name);
 			for (auto j : paramList)
-				insert_id(j);
+				if (!insert_id(j))
+				{
+					reportError("repeated definition", tokenSeq[tokenSeqPos]);
+					return;
+				}
 			//parameter insert id table.
 			temp = temp1;
 			temp.idType = _variable;
 			temp.name = tokenSeq[tokenSeqPos + 1].content;
 			temp.dataType = idStack[idStack.size() - 1].dataType;
-			insert_id(temp);
+			if (!insert_id(temp))
+			{
+				reportError("repeated definition", tokenSeq[tokenSeqPos]);
+				return;
+			}
 			//return value insert id table.
 			paramList.clear();
 			idStack.pop_back();
@@ -485,12 +511,16 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			break;
 
 		case 48: // statement->for id assignop expression to expression do statement
-			temp = searchId(tokenSeq[tokenSeqPos - 1].content);
-			if (temp.dataType.basicType == _integer)
+			temp = searchId(tokenSeq[tokenSeqPos + 1].content);
+			if (temp.isError)
 			{
-				reportError("not integer type in for if id ", tokenSeq[tokenSeqPos]);
+				reportError("use undefined variable.", tokenSeq[tokenSeqPos+1]);
 			}
-			if (idStack[idStack.size() - 1].dataType.basicType != _integer || idStack[idStack.size() - 2].dataType.basicType != _integer)
+			if (temp.dataType.basicType != _integer)
+			{
+				reportError("not integer type in for if id ", tokenSeq[tokenSeqPos+1]);
+			}
+			if (idStack.back().dataType.basicType != _integer || idStack[idStack.size() - 2].dataType.basicType != _integer)
 			{
 				//cerr << "idStack[idStack.size() - 1].dataType.basicType=" << idStack[idStack.size() - 1].dataType.basicType << endl;
 				//cerr << "idStack[idStack.size() - 2].dataType.basicType=" << idStack[idStack.size() - 2].dataType.basicType << endl;
@@ -577,6 +607,10 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 
 		case 57: // procedure_call->id
 			temp = searchId(tokenSeq[tokenSeqPos].content);
+			if (temp.isError)
+			{
+				reportError("use undefined variable.", tokenSeq[tokenSeqPos]);
+			}
 			if (temp.idType != _procedure && temp.idType != _function)
 			{
 				reportError("A non function(procedure) identifier was incorrectly called", tokenSeq[tokenSeqPos]);
@@ -607,11 +641,11 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 					{
 						//cerr << "temp.paramList[j].dataType.basicType=" << temp.paramList[j].dataType.basicType << endl;
 						//cerr << "exprListStack[exprListStack.size() - 1][j].dataType.basicType=" << exprListStack[exprListStack.size() - 1][j].dataType.basicType << endl;
-						reportError("Wrong parameter type1 ", tokenSeq[tokenSeqPos]);
+						reportError("Wrong parameter type ", tokenSeq[tokenSeqPos]);
 					}
 				}
 				else
-					reportError("Wrong parameter type2 ", tokenSeq[tokenSeqPos]);
+					reportError("Wrong parameter type ", tokenSeq[tokenSeqPos]);
 				if (temp.paramList[j].dataType.param_type == _value && exprListStack.back()[j].idType != _variable)
 				{
 					reportError("use not variable to value parameter.", tokenSeq[tokenSeqPos]);
@@ -875,6 +909,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 			break;
 		}
 
+		/*
 		if (idStack.size())
 			cerr << idStack.size() << ":" << (int)idStack[idStack.size() - 1].dataType.basicType << "xxx" << endl;
 		else
@@ -883,41 +918,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 		cerr << "exprListStackSize" << exprListStack.size() << endl;
 		if (exprListStack.size())
 			cerr << "exprList.size()=" << exprListStack[exprListStack.size() - 1].size() << endl;
+		*/
 	}
 	//cerr<<"RList.size()="<<rlistRecord.size()<<endl;
 }
-/*
-int main()
-{
-	ifstream productIn;
-	productIn.open("C:\\acm\\coding\\Project1\\production_sequence.pas");
-	for (int i = 1; i <= 90; ++i)
-	{
-		int x;
-		string y;
-		productIn >> x;
-		getline(productIn, y, '\n');
-		numToProduct[x] = y;
-	}
-
-	vector<token> tokenSeq;
-	tokenSeq.clear();
-
-	Grammar grammar = initGrammer();
-
-	LR_PredictTable LRtable = getTable(grammar);
-
-	vector<int> productSeq(control_program(LRtable, grammar, tokenSeq));
-
-	initIdTable();
-
-	for (auto i : productSeq)
-		cerr << i << endl;
-	for (auto i : tokenSeq)
-		cerr << i.content << endl;
-
-	semantic_analysis(productSeq, tokenSeq);
-	cerr << "Success!!" << endl;
-	return 0;
-}
-*/

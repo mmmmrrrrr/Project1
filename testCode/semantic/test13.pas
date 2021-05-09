@@ -1,4 +1,3 @@
-
 program a;
 var
     b:integer;
