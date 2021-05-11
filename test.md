@@ -673,7 +673,7 @@ end.
 
 ## 代码生成测试
 
-1.基础功能测试
+1. 基础功能测试
 
 测试样例
 
@@ -721,7 +721,7 @@ int main()
 }
 ```
 
-2.数组测试
+2. 数组测试
 
 测试样例：
 
@@ -778,6 +778,326 @@ short gcd(short a, short b)
 int main()
 {
     printf("%hd %hd", c[d[32 - 34][47 - 78] - 105], d[45 - 34][79 - 78]);
+    return 0;
+}
+
+```
+
+3. 递归测试:
+
+测试样例：
+
+该样例主要目的为测试是否能够正确应对函数递归的情况，
+
+代码的含义为计算两个数的最大公约数
+
+```pascal
+program example(input,output);
+    var x,y:integer;
+    function gcd(a,b:integer):integer;
+    var d:integer;
+        begin 
+            if b=0 then gcd:=a
+            else gcd:=b;
+            gcd:=1;
+            d:=gcd;
+        end;
+    begin
+        read(x, y);
+        write(gcd(x, y))
+    end.
+```
+
+
+
+测试结果：
+
+```C
+#include <stdio.h>
+
+short x, y;
+short gcd(short a, short b)
+{
+    short gcd_returnVal;
+    short d;
+    if (b == 0)
+        gcd_returnVal = a;
+    else
+        gcd_returnVal = b;
+    gcd_returnVal = 1;
+    d = gcd_returnVal;
+    return gcd_returnVal;
+}
+int main()
+{
+    scanf("%hd %hd", &x, &y);
+    printf("%hd", gcd(x, y));
+    return 0;
+}
+
+```
+
+4. 快排测试
+
+测试样例：
+
+该样例为快速排序算法
+
+```pascal
+program qsort(input,output);
+var
+	n,i:integer;
+	list:array[0..1000] of integer;
+	c:char;
+procedure qsort(low, high:integer);
+var
+	l,h,m:integer;
+	i,j:integer;
+	temp:integer;
+	flag:integer;
+begin
+	flag:=0;
+	l:=low; h:=high;
+	m:=list[(l+h) div 2];
+	for i:=1 to 1000 do
+	begin
+	if flag=0 then begin
+		for j:=1 to 1000 do
+			if list[l]<m then l:=l+1;
+		for j:=1 to 1000 do
+			if list[h]>m then h:=h-1;
+		if l<=h then
+		begin
+			temp:=list[l]; list[l]:=list[h]; list[h]:=temp;
+			l:=l+1; h:=h-1;
+		end;
+		if (l>h) then flag:=1;
+	end;
+	end;
+	if l<high then qsort(l,high);
+	if h>low then qsort(low,h);
+end;
+
+begin
+	read(n);
+	for i:=0 to n-1 do
+		read(list[i]);
+	qsort(0,n-1);
+        for i:=0 to n-1 do
+        begin
+            write(list[i]);
+        end
+end.
+
+```
+
+测试结果:
+
+```c
+#include <stdio.h>
+
+short n, i;
+short list[1001];
+char c;
+void qsort(short low, short high)
+{
+    short l, h, m;
+    short i, j;
+    short temp;
+    short flag;
+    flag = 0;
+    l = low;
+    h = high;
+    m = list[(l + h) / 2 - 0];
+    for (i = 1; i <= 1000; i++)
+    {
+        if (flag == 0)
+        {
+            for (j = 1; j <= 1000; j++)
+                if (list[l - 0] < m)
+                    l = l + 1;
+            for (j = 1; j <= 1000; j++)
+                if (list[h - 0] > m)
+                    h = h - 1;
+            if (l <= h)
+            {
+                temp = list[l - 0];
+                list[l - 0] = list[h - 0];
+                list[h - 0] = temp;
+                l = l + 1;
+                h = h - 1;
+            }
+            if ((l > h))
+                flag = 1;
+        }
+    }
+    if (l < high)
+        qsort(l, high);
+    if (h > low)
+        qsort(low, h);
+}
+int main()
+{
+    scanf("%hd", &n);
+    for (i = 0; i <= n - 1; i++)
+        scanf("%hd", &list[i - 0]);
+    qsort(0, n - 1);
+    for (i = 0; i <= n - 1; i++)
+        printf("%hd", list[i - 0]);
+    return 0;
+}
+
+```
+
+5. 额外题目测试
+
+   该样例引用的是一下网址的题目的解题代码
+
+   > https://codeforces.ml/contest/1515/problem/D
+
+```pascal
+program a;
+const 
+    maxN=200005;
+var
+    cntL,cntR:array [0..200005] of integer;
+    T,n,l,r,c:integer;
+    o,i:integer;
+    zd,zs,yd,ys:integer;
+    ans:integer;
+procedure swap(var a,b:integer);
+var
+    t:integer;
+begin
+    t:=a;
+    a:=b;
+    b:=t;
+end;
+ begin
+    read(T);
+    for o:=1 to T do begin
+        read(n,l,r);
+        for i:=1 to n do begin
+            cntL[i]:=0;
+            cntR[i]:=0;
+        end;
+        for i:=1 to l do begin
+            read(c);
+            cntL[c]:=cntL[c]+1;
+        end;
+        for i:=1 to r do begin
+            read(c);
+            cntR[c]:=cntR[c]+1;
+        end;
+        zd:=0;
+        zs:=0;
+        yd:=0;
+        ys:=0;
+        for i:=1 to n do begin
+            zd:=zd+cntL[i] mod 2;
+            zs:=zs+cntL[i] div 2;
+        end;
+        for i:=1 to n do begin
+            yd:=yd+cntR[i] mod 2;
+            ys:=ys+cntR[i] div 2;
+        end;
+        ans:=0;
+        if zd<yd then begin
+            swap(zd,yd);
+            swap(zs,ys);
+        end;
+        zd:=zd-yd;
+        ans:=ans+yd+zs;
+        yd:=0;
+        zs:=0;
+        if ys*2>=zd then begin
+            ans:=ans+zd+(ys*2-zd)div 2;
+        end
+        else begin
+            ans:=ans+ys*2;
+            zd:=zd-ys*2;
+            ans:=ans+2;
+        end;
+        write(ans);
+    end;
+
+ end.
+```
+
+测试结果：
+
+```c++
+#include <stdio.h>
+
+const short maxn = 200005;
+short cntl[200006];
+short cntr[200006];
+short t, n, l, r, c;
+short o, i;
+short zd, zs, yd, ys;
+short ans;
+void swap(short &a, short &b)
+{
+    short t;
+    t = a;
+    a = b;
+    b = t;
+}
+int main()
+{
+    scanf("%hd", &t);
+    for (o = 1; o <= t; o++)
+    {
+        scanf("%hd %hd %hd", &n, &l, &r);
+        for (i = 1; i <= n; i++)
+        {
+            cntl[i - 0] = 0;
+            cntr[i - 0] = 0;
+        }
+        for (i = 1; i <= l; i++)
+        {
+            scanf("%hd", &c);
+            cntl[c - 0] = cntl[c - 0] + 1;
+        }
+        for (i = 1; i <= r; i++)
+        {
+            scanf("%hd", &c);
+            cntr[c - 0] = cntr[c - 0] + 1;
+        }
+        zd = 0;
+        zs = 0;
+        yd = 0;
+        ys = 0;
+        for (i = 1; i <= n; i++)
+        {
+            zd = zd + cntl[i - 0] % 2;
+            zs = zs + cntl[i - 0] / 2;
+        }
+        for (i = 1; i <= n; i++)
+        {
+            yd = yd + cntr[i - 0] % 2;
+            ys = ys + cntr[i - 0] / 2;
+        }
+        ans = 0;
+        if (zd < yd)
+        {
+            swap(zd, yd);
+            swap(zs, ys);
+        }
+        zd = zd - yd;
+        ans = ans + yd + zs;
+        yd = 0;
+        zs = 0;
+        if (ys * 2 >= zd)
+            ans = ans + zd + (ys * 2 - zd) / 2;
+        else
+        {
+            ans = ans + ys * 2;
+            zd = zd - ys * 2;
+            ans = ans + 2;
+        }
+        printf("%hd", ans);
+    }
     return 0;
 }
 

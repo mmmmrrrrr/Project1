@@ -1,44 +1,66 @@
-program qsort(input,output);
+program a;
+const 
+    maxN=200005;
 var
-	n,i:integer;
-	list:array[0..1000] of integer;
-	c:char;
-procedure qsort(low, high:integer);
+    cntL,cntR:array [0..200005] of integer;
+    T,n,l,r,c:integer;
+    o,i:integer;
+    zd,zs,yd,ys:integer;
+    ans:integer;
+procedure swap(var a,b:integer);
 var
-	l,h,m:integer;
-	i,j:integer;
-	temp:integer;
-	flag:integer;
+    t:integer;
 begin
-	flag:=0;
-	l:=low; h:=high;
-	m:=list[(l+h) div 2];
-	for i:=1 to 1000 do
-	begin
-	if flag=0 then begin
-		for j:=1 to 1000 do
-			if list[l]<m then l:=l+1;
-		for j:=1 to 1000 do
-			if list[h]>m then h:=h-1;
-		if l<=h then
-		begin
-			temp:=list[l]; list[l]:=list[h]; list[h]:=temp;
-			l:=l+1; h:=h-1;
-		end;
-		if (l>h) then flag:=1;
-	end;
-	end;
-	if l<high then qsort(l,high);
-	if h>low then qsort(low,h);
+    t:=a;
+    a:=b;
+    b:=t;
 end;
-
-begin
-	read(n);
-	for i:=0 to n-1 do
-		read(list[i]);
-	qsort(0,n-1);
-        for i:=0 to n-1 do
-        begin
-            write(list[i]);
+ begin
+    read(T);
+    for o:=1 to T do begin
+        read(n,l,r);
+        for i:=1 to n do begin
+            cntL[i]:=0;
+            cntR[i]:=0;
+        end;
+        for i:=1 to l do begin
+            read(c);
+            cntL[c]:=cntL[c]+1;
+        end;
+        for i:=1 to r do begin
+            read(c);
+            cntR[c]:=cntR[c]+1;
+        end;
+        zd:=0;
+        zs:=0;
+        yd:=0;
+        ys:=0;
+        for i:=1 to n do begin
+            zd:=zd+cntL[i] mod 2;
+            zs:=zs+cntL[i] div 2;
+        end;
+        for i:=1 to n do begin
+            yd:=yd+cntR[i] mod 2;
+            ys:=ys+cntR[i] div 2;
+        end;
+        ans:=0;
+        if zd<yd then begin
+            swap(zd,yd);
+            swap(zs,ys);
+        end;
+        zd:=zd-yd;
+        ans:=ans+yd+zs;
+        yd:=0;
+        zs:=0;
+        if ys*2>=zd then begin
+            ans:=ans+zd+(ys*2-zd)div 2;
         end
-end.
+        else begin
+            ans:=ans+ys*2;
+            zd:=zd-ys*2;
+            ans:=ans+2;
+        end;
+        write(ans);
+    end;
+
+ end.

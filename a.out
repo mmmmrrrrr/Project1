@@ -1,4 +1,7 @@
 [I]>>>Read data from file:test.pas
 Syntax analysis Success！
 Success!!
+test.cpp:3:18: warning: overflow in conversion from 'int' to 'short int' changes value from '200005' to '3397' [-Woverflow]
+    3 | const short maxn=200005;
+      |                  ^~~~~~
 0
