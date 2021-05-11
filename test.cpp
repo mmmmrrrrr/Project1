@@ -1,52 +1,73 @@
 #include <stdio.h>
 
-short n, i;
-short list[1001];
-char c;
-void qsort(short low, short high)
+const short maxn = 200005;
+short cntl[200006];
+short cntr[200006];
+short t, n, l, r, c;
+short o, i;
+short zd, zs, yd, ys;
+short ans;
+void swap(short &a, short &b)
 {
-    short l, h, m;
-    short i, j;
-    short temp;
-    short flag;
-    flag = 0;
-    l = low;
-    h = high;
-    m = list[(l + h) / 2 - 0];
-    for (i = 1; i <= 1000; i++)
-    {
-        if (flag == 0)
-        {
-            for (j = 1; j <= 1000; j++)
-                if (list[l - 0] < m)
-                    l = l + 1;
-            for (j = 1; j <= 1000; j++)
-                if (list[h - 0] > m)
-                    h = h - 1;
-            if (l <= h)
-            {
-                temp = list[l - 0];
-                list[l - 0] = list[h - 0];
-                list[h - 0] = temp;
-                l = l + 1;
-                h = h - 1;
-            }
-            if ((l > h))
-                flag = 1;
-        }
-    }
-    if (l < high)
-        qsort(l, high);
-    if (h > low)
-        qsort(low, h);
+    short t;
+    t = a;
+    a = b;
+    b = t;
 }
 int main()
 {
-    scanf("%hd", &n);
-    for (i = 0; i <= n - 1; i++)
-        scanf("%hd", &list[i - 0]);
-    qsort(0, n - 1);
-    for (i = 0; i <= n - 1; i++)
-        printf("%hd", list[i - 0]);
+    scanf("%hd", &t);
+    for (o = 1; o <= t; o++)
+    {
+        scanf("%hd %hd %hd", &n, &l, &r);
+        for (i = 1; i <= n; i++)
+        {
+            cntl[i - 0] = 0;
+            cntr[i - 0] = 0;
+        }
+        for (i = 1; i <= l; i++)
+        {
+            scanf("%hd", &c);
+            cntl[c - 0] = cntl[c - 0] + 1;
+        }
+        for (i = 1; i <= r; i++)
+        {
+            scanf("%hd", &c);
+            cntr[c - 0] = cntr[c - 0] + 1;
+        }
+        zd = 0;
+        zs = 0;
+        yd = 0;
+        ys = 0;
+        for (i = 1; i <= n; i++)
+        {
+            zd = zd + cntl[i - 0] % 2;
+            zs = zs + cntl[i - 0] / 2;
+        }
+        for (i = 1; i <= n; i++)
+        {
+            yd = yd + cntr[i - 0] % 2;
+            ys = ys + cntr[i - 0] / 2;
+        }
+        ans = 0;
+        if (zd < yd)
+        {
+            swap(zd, yd);
+            swap(zs, ys);
+        }
+        zd = zd - yd;
+        ans = ans + yd + zs;
+        yd = 0;
+        zs = 0;
+        if (ys * 2 >= zd)
+            ans = ans + zd + (ys * 2 - zd) / 2;
+        else
+        {
+            ans = ans + ys * 2;
+            zd = zd - ys * 2;
+            ans = ans + 2;
+        }
+        printf("%hd", ans);
+    }
     return 0;
 }
