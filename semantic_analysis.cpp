@@ -788,7 +788,7 @@ void semantic_analysis(const vector<int> &productSeq, const vector<token> &token
 					reportError("Wrong parameter type", tokenSeq[tokenSeqPos]);
 				if (temp.paramList[j].dataType.param_type == _value && exprListStack.back()[j].idType != _variable)
 				{
-					reportError("use not variable to value parameter.", tokenSeq[tokenSeqPos]);
+					reportError("use not variable to reference parameter.", tokenSeq[tokenSeqPos]);
 				}
 			}
 			exprListStack.pop_back();
