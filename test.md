@@ -195,6 +195,146 @@
 
 #### (2)语法分析
 
+1. 括号不匹配
+
+   1. 测试用例
+
+      ```pascal
+      program testLex(input, output;
+      var
+      	i, j, tmp, size: integer;
+      	list:array[0..1000] of integer;
+      begin
+          for i := 1 to size-1 do
+      	for j := 1 to i do
+      	    if list[j] > list[j+1] then
+      	    begin
+      		    tmp := list[j];
+      		    list[j] := list[j+1];
+      		    list [j+1] := tmp;
+      	    end;
+      
+          for i :=1 to size do
+      	write(list[i])
+      end.
+      ```
+
+      
+
+   2. 预期结果
+
+      上述代码的词法分析结果正常，但在第一行出现了括号未匹配的问题 **(input, output;**，由语法分析部分报错，要求输出结果声明为语法分析，并给出错误行号为**1**，输出预测的错误内容。
+
+   3. 测试结果及分析
+
+      ![image-20210511213831174](test.assets/image-20210511213831174.png)
+
+2. 操作数缺失
+
+   1. 测试用例
+
+      ```pascal
+      program testLex(input, output);
+      var
+      	i, j, tmp, size: integer;
+      	list:array[0..1000] of integer;
+      begin
+          for i := to size-1 do
+      	for j := 1 to i do
+      	    if list[j] > list[j+1] then
+      	    begin
+      		    tmp := list[j];
+      		    list[j] := list[j+1];
+      		    list [j+1] := tmp;
+      	    end;
+      
+          for i :=1 to size do
+      	write(list[i])
+      end.
+      ```
+
+      
+
+   2. 预期结果
+
+      上述代码在第六行本应是**for i := 1 to size-1 do**，但实际却缺少了操作数1，但语法分析并不能准确识别这里属于操作数缺失，而只能识别出这里出现了错误，故在报错信息中会给出错误类别为**语法错误**，给出错误行号，并给出识别到错误时当前识别到的字符以及预测该错误具体可能是什么，但未必准确。
+
+   3. 测试结果及分析
+
+      ![image-20210511214117287](test.assets/image-20210511214117287.png)
+
+3. 符号冗余
+
+   1. 测试用例
+
+      ```pascal
+      program testLex(input, output);
+      var
+      	i,, j, tmp, size: integer;
+      	list:array[0..1000] of integer;
+      begin
+          for i := 1 to size-1 do
+      	for j := 1 to i do
+      	    if list[j] > list[j+1] then
+      	    begin
+      		    tmp := list[j];
+      		    list[j] := list[j+1];
+      		    list [j+1] := tmp;
+      	    end;
+      
+          for i :=1 to size do
+      	write(list[i])
+      end.
+      ```
+
+      
+
+   2. 预期结果
+
+      该测试样例在词法上没有问题，但在语法分析时会发现第三行出现了重复的两个**","**，语法分析会识别出该错误，并报告语法分析异常，给出出错行号为**3**，错误类型为符号冗余，并停止程序的继续执行。
+
+   3. 测试结果及分析
+
+      ![image-20210511214313718](test.assets/image-20210511214313718.png)
+
+      
+
+4. 符号缺失
+
+   1. 测试用例
+
+      ```pascal
+      program testLex(input, output);
+      var
+      	i, j, tmp, size: integer
+      	list:array[0..1000] of integer;
+      begin
+          for i := 1 to size-1 do
+      	for j := 1 to i do
+      	    if list[j] > list[j+1] then
+      	    begin
+      		    tmp := list[j];
+      		    list[j] := list[j+1];
+      		    list [j+1] := tmp;
+      	    end;
+      
+          for i :=1 to size do
+      	write(list[i])
+      end.
+      ```
+
+      
+
+   2. 预期结果
+
+      在**第3行**缺少了结束的**;**，语法分析报错，输出错误类型语法错误，错误行号3，错误内容为符号缺失。
+
+   3. 测试结果及分析
+
+      ![image-20210511214433480](test.assets/image-20210511214433480.png)
+
+      在实际测试时，发现错误行号输出并不是**3，而是4**，因为在语法分析的错误分析时，并不能完全准确的识别出错误的发生地点，而只能给出发生了语法错误时正在识别的那个符号的位置，在发生**“;”**缺失的那一行当时语法分析并没有立即识别出错误，而在下一行才开始发现发生了语法错误，所以发生了错误报错行号与实际错误行号不一致的情况。
+
 #### (3)语义分析	
 
 
@@ -530,4 +670,116 @@ end.
 测试结果：
 
 <img src="test.assets/image-20210509222943638.png" alt="image-20210509222943638" style="zoom:50%;" />
+
+## 代码生成测试
+
+1.基础功能测试
+
+测试样例
+
+```pascal
+program a;
+const 
+    maxN=200005;
+    a=123.0;
+    c='a';
+    d=-1325;
+    e=+3253;
+var
+    f,g,k,b:integer;
+      h,i:char;
+    dfds,c2,g3:boolean;
+    dfsge1312,d13,reww:real;
+ begin
+    d13:=(g+f)*k / b;
+	c2:=h>i;
+	reww:=(dfsge1312+reww)-k+b mod (f+g)
+    
+ end.
+```
+
+测试结果：
+
+```c
+#include <stdio.h>
+
+const short maxn = 200005;
+const float a = 123.0;
+const char c = 'a';
+const short d = -1325;
+const short e = +3253;
+short f, g, k, b;
+char h, i;
+bool dfds, c2, g3;
+float dfsge1312, d13, reww;
+int main()
+{
+    d13 = (g + f) * k / (float)b;
+    c2 = h > i;
+    reww = (dfsge1312 + reww) - k + b % (f + g);
+    return 0;
+}
+```
+
+2.数组测试
+
+测试样例：
+
+本样例主要测试的是能否将数组做出正确的处理，
+
+由于C语言与pascal语言对于数组定义的不同，转换时需要减去下标
+
+```pascal
+program a;
+var 
+    c :array [105..1000] of integer;
+    d :array [34..500,78..897] of integer;
+ function gcd(a,b:integer):integer;
+ var
+    c :array [105..1000,73..100] of integer;
+     e :array [105..1000] of integer;
+     f :array [34..500,78..897] of integer;
+        begin 
+         read(e[768]);
+        write(f[54,97]);
+        read(c[768,79]);
+        write(d[54,97]);
+        if b=0 then gcd:=a
+        else gcd:=gcd(b, a mod b)
+        end;
+ begin
+    write(c[d[32,47]],d[45,79]);
+ end.
+```
+
+测试结果：
+
+```c++
+#include <stdio.h>
+
+short c[896];
+short d[467][820];
+short gcd(short a, short b)
+{
+    short gcd_returnVal;
+    short c[896][28];
+    short e[896];
+    short f[467][820];
+    scanf("%hd", &e[768 - 105]);
+    printf("%hd", f[54 - 34][97 - 78]);
+    scanf("%hd", &c[768 - 105][79 - 73]);
+    printf("%hd", d[54 - 34][97 - 78]);
+    if (b == 0)
+        gcd_returnVal = a;
+    else
+        gcd_returnVal = gcd(b, a % b);
+    return gcd_returnVal;
+}
+int main()
+{
+    printf("%hd %hd", c[d[32 - 34][47 - 78] - 105], d[45 - 34][79 - 78]);
+    return 0;
+}
+
+```
 
