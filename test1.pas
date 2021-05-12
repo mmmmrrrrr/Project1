@@ -15,6 +15,12 @@ begin
     a:=b;
     b:=t;
 end;
+function min(r,c:integer):integer;
+begin
+    if r<c then
+        min:=r
+    else min:=c;
+end;
  begin
     read(T);
     for o:=1 to T do begin
@@ -31,6 +37,11 @@ end;
             read(c);
             cntR[c]:=cntR[c]+1;
         end;
+        for i:=1 to n do begin
+            c:=min(cntL[i],cntR[i]);
+            cntL[i]:=cntL[i]-c;
+            cntR[i]:=cntR[i]-c;
+        end;
         zd:=0;
         zs:=0;
         yd:=0;
@@ -43,6 +54,7 @@ end;
             yd:=yd+cntR[i] mod 2;
             ys:=ys+cntR[i] div 2;
         end;
+ 
         ans:=0;
         if zd<yd then begin
             swap(zd,yd);
@@ -58,9 +70,9 @@ end;
         else begin
             ans:=ans+ys*2;
             zd:=zd-ys*2;
-            ans:=ans+2;
+            ans:=ans+zd;
         end;
         write(ans);
     end;
-
+ 
  end.
