@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 		}
 	}
 	freopen("test.cpp", "w", stdout);
-	freopen("a.out", "w", stderr);
+	freopen("message.txt", "w", stderr);
 	ifstream ifile(readFileName);
 	ofstream ofile("lexOut.txt");
 	yyFlexLexer yy;
@@ -35,9 +35,10 @@ int main(int argc, char **argv)
 	ofile.close();
 	yy.yylex();
 	ifstream productIn;
-	productIn.open(".\\production_sequence.pas");
+	//productIn.open(".\\production_sequence.pas");
 	map<int, string> numToProduct;
 	numToProduct.clear();
+	/*
 	for (int i = 1; i <= 90; ++i)
 	{
 		int x;
@@ -46,6 +47,7 @@ int main(int argc, char **argv)
 		getline(productIn, y, '\n');
 		numToProduct[x] = y;
 	}
+	*/
 
 	vector<token> token_seq;
 	token_seq.clear();

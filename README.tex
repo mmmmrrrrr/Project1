@@ -1,0 +1,458 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{ctexart}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs}
+% Fix footnotes in tables (requires footnote package)
+\IfFileExists{footnote.sty}{\usepackage{footnote}\makesavenoteenv{longtable}}{}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\date{}
+
+\begin{document}
+
+\hypertarget{header-n0}{%
+\section{课程设计报告}\label{header-n0}}
+
+\hypertarget{header-n2}{%
+\subsection{1.课程设计目标和要求}\label{header-n2}}
+
+\hypertarget{header-n3}{%
+\subsection{2.需求分析}\label{header-n3}}
+
+\hypertarget{header-n4}{%
+\subsubsection{2.1数据流图}\label{header-n4}}
+
+\hypertarget{header-n5}{%
+\subsubsection{2.2功能}\label{header-n5}}
+
+\hypertarget{header-n6}{%
+\paragraph{1)词法分析}\label{header-n6}}
+
+\hypertarget{header-n7}{%
+\paragraph{2)语法分析}\label{header-n7}}
+
+\hypertarget{header-n8}{%
+\paragraph{3)语义分析}\label{header-n8}}
+
+在语法分析的基础上，根据其产生式序列和以归约顺序重排的词法序列建立和维护符号表，检查是否存在重复定义，类型不一致等错误，并为代码生成提供对于符号表信息的查询接口。
+
+\hypertarget{header-n10}{%
+\paragraph{4）代码生成}\label{header-n10}}
+
+\hypertarget{header-n11}{%
+\subsection{3.总体设计}\label{header-n11}}
+
+\hypertarget{header-n12}{%
+\subsubsection{3.1 数据结构设计}\label{header-n12}}
+
+\hypertarget{header-n14}{%
+\paragraph{1)符号表IdTable}\label{header-n14}}
+
+设定符号表为多层次结构；
+
+建立主符号表，用于存储全局的标识符；
+
+以及子符号表用于存储局部的标识符；
+
+\begin{itemize}
+\item
+  \(father\)指向上层符号表，主符号表指向空，子符号表指向主符号表
+\item
+  \(nameToId\)使用了C++的STL库中的\(unordered\_map\),为将一个字符串映射至一个标识符的存储方式。
+\item
+  \(now\_id\_table\)指向当前块所在的符号表；
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{struct}\NormalTok{ Id_Table}
+\NormalTok{\{}
+\NormalTok{	Id_Table *father;		}
+\NormalTok{	map<string, Id> name_to_id;}
+\NormalTok{\} * now_id_table;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\item
+  标识符\textbf{Id}
+\end{itemize}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule
+属性 & 类型 & 含义\tabularnewline
+\midrule
+\endhead
+name & string & 标识符名字\tabularnewline
+dataType & DataType & 数据类型\tabularnewline
+idType & IdType & 标识符类型\tabularnewline
+paramList & vector\textless{}Param\textgreater{}paramList &
+参数列表\tabularnewline
+retDataType & DataType & 返回值类型\tabularnewline
+isError & bool & 是否有错误\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{itemize}
+\item
+  参数(\textbf{Param})
+
+  \begin{longtable}[]{@{}lll@{}}
+  \toprule
+  属性 & 类型 & 含义\tabularnewline
+  \midrule
+  \endhead
+  name & string & 标识符名字\tabularnewline
+  dataType & DataType & 数据类型\tabularnewline
+  \bottomrule
+  \end{longtable}
+\item
+  数据类型(\textbf{DataType})
+
+  \begin{longtable}[]{@{}lll@{}}
+  \toprule
+  属性 & 类型 & 含义\tabularnewline
+  \midrule
+  \endhead
+  basicType & BasicType & 基础数据类型\tabularnewline
+  constVal & int & 整数型常量数值\tabularnewline
+  dimension & int & 数组维度\tabularnewline
+  upperBound & vector & 数组上限\tabularnewline
+  lowerBound & vector & 数组下限\tabularnewline
+  paramType & ParamType & 参数类型\tabularnewline
+  \bottomrule
+  \end{longtable}
+\item
+  枚举类型 \textbf{BasicType}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{enum}\NormalTok{ BasicType : }\DataTypeTok{int}
+\NormalTok{\{}
+\NormalTok{	_integer = }\DecValTok{1}\NormalTok{,}
+\NormalTok{	_real,}
+\NormalTok{	_boolean,}
+\NormalTok{	_char,}
+\NormalTok{\};	}
+\end{Highlighting}
+\end{Shaded}
+
+  对应四种支持的数据类型
+\item
+  枚举类型 \textbf{ParamType}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{enum}\NormalTok{ ParamType : }\DataTypeTok{int}
+\NormalTok{\{}
+\NormalTok{_reference = }\DecValTok{1}\NormalTok{,}
+\NormalTok{_value}
+\NormalTok{\};}
+\end{Highlighting}
+\end{Shaded}
+
+  对应引用参数，传值参数
+\item
+  枚举类型 \textbf{IdType}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{enum}\NormalTok{ IdType : }\DataTypeTok{int}
+\NormalTok{\{}
+\NormalTok{  _constant = }\DecValTok{1}\NormalTok{,}
+\NormalTok{  _variable,}
+\NormalTok{  _procedure,}
+\NormalTok{  _function}
+\NormalTok{\};}
+\end{Highlighting}
+\end{Shaded}
+
+  对应5种标识符类型
+\end{itemize}
+
+\hypertarget{header-n117}{%
+\subsection{4.总体设计}\label{header-n117}}
+
+\hypertarget{header-n118}{%
+\subsubsection{4.3 语义分析}\label{header-n118}}
+
+\hypertarget{header-n119}{%
+\paragraph{1) 接口描述}\label{header-n119}}
+
+输入： 语法分析生成的依照SLR分析归约顺序的产生式序列和记号序列。
+
+输出： 供代码生成的符号表，给语义分析提供所需的列表。
+
+\hypertarget{header-n122}{%
+\paragraph{2) 功能描述}\label{header-n122}}
+
+\begin{itemize}
+\item
+  检索标识符
+
+  对于给定的标识符进行查找，如果当前表不存在，则查找上一层符号表,直至主符号表。
+\item
+  插入标识符
+
+  在符号表中新建对应的项。
+\item
+  定位
+
+  建立新的子符号表，将指针指向当前符号表
+\item
+  重定位
+
+  删除当前符号表，根据指针找到上层符号表。
+\item
+  错误检查
+
+  对于作用域，赋值语句，函数和过程调用，运算符使用进行检查。
+\end{itemize}
+
+\hypertarget{header-n139}{%
+\paragraph{3) 所用数据结构说明}\label{header-n139}}
+
+\begin{itemize}
+\item
+  \textbf{idStack}(vector\textless{}Id\textgreater{})
+
+  用于记录标识符信息的栈。
+\item
+  \textbf{idList}(vector\textless{}Id\textgreater{})
+
+  用于变量定义时存储标识符列表。
+\item
+  \textbf{opStack}(vector\textless{}string\textgreater{})
+
+  用于记录运算表达式操作符。
+\item
+  \textbf{paramList}(vector\textless{}Id\textgreater{})
+
+  记录函数和过程的参数列表
+\item
+  \textbf{varList}(vector\textless{}Id\textgreater{})
+
+  记录调用read函数的参数列表
+\item
+  \textbf{exprListStack}
+  (vector\textless{}vector\textless{}Id\textgreater{}\textgreater{})
+
+  记录expressionList的列表，用于函数的调用。
+\item
+  \textbf{nowIdTable} (IdTable*)
+
+  当前所在符号表的指针。
+\end{itemize}
+
+\hypertarget{header-n163}{%
+\paragraph{4) 详细设计}\label{header-n163}}
+
+整体来看，程序根据产生式的序号，以及该产生式所归约的词法符号，决定如何进行对于符号表的修改和
+
+\begin{itemize}
+\item
+  常量定义
+
+  \(const\_value \to ...\)
+
+  \(idStack\)根据产生式记录下常量类型.
+
+  \(const\_declaration\to id\ relop\_e\ const\_value\)
+
+  根据\(idStack\)中常量类型和\(id\)，将其插入符号表中。
+\end{itemize}
+
+\begin{itemize}
+\item
+  变量定义
+
+  \(type \to ...\)
+
+  \(idStack\)根据产生式记录下变量类型.
+
+  \(idlist \to id | idList,id\)
+
+  \(idList\)记录下id名。
+
+  \(var\_declaration->idlist\ punc\_colon\ type\)
+
+  根据\(idStack\)中变量量类型和\(id\)，将其插入符号表中。
+\item
+  运算表达式
+
+  \(x \to y\ op \ z\)
+
+  根据\(op\)类型以及\(y\)和\(z\)的类型得出\(x\)的类型，以及判断是否存在运算符的使用错误
+
+  \begin{longtable}[]{@{}llll@{}}
+  运算符 & 类型 & 子表达式y,z类型限制 & x表达式类型\tabularnewline
+  \midrule
+  \endhead
+  relop & 关系运算符 & y,z类型相同，或者为real和integer &
+  bool\tabularnewline
+  not & 取非运算符 & bool & bool\tabularnewline
+  minus & 取反运算符 & integer或real & z类型\tabularnewline
+  "+","-","*","/" & 算术运算符 & integer或real & 有real\tabularnewline
+  "div","mod" & 算术运算符 & integer & integer\tabularnewline
+  "and","or" & 与或运算符 & bool & bool\tabularnewline
+  \bottomrule
+  \end{longtable}
+\item
+  \(if\)与\(else\)语句
+
+  \(statement\to if\ expression\ then\ statement else\_part\)
+
+  检查\(expression\)的类型是否为\(bool\)
+\item
+  \(for\) 语句
+
+  \(statement\to for\ id\ assignop\ expression\ to\ expression\ do\ statement\)
+
+  检查\(id\)类型是否为\(integer\)
+\item
+  数组使用
+
+  \(period\to period\ punc\_comma\ digits\ punc\_point\ punc\_point\ digits\)
+
+  记录数组维度增加一维，并且记录上限和下限，并判断上限是否小于等于下限。
+
+  \(type\to array\ punc\_square\_left\ period\ punc\_square\_right\ of\ basic\_type\)
+
+  将\(idStack\)中记录维度和类型的信息合并。
+
+  \(variable->id\ id\_varpart\)
+
+  查看数组，对比维度数量是否正确，以及\(varpart\)均为\(integer\)类型
+\item
+  过程及函数使用
+
+  \(parameter\_list\to parameter\_list\ punc\_semicolon\ parameter\)
+
+  用\(paramList\)记录下参数列表.
+
+  \(subprogram\_head\to function\ id\ formal_parameter\ punc_colon\ basic\_type\)
+
+  将函数的属性(参数列表，返回值类型)计入符号表,并且进行定位，将所有的参数和返回值加入子符号表中。
+
+  \(procedure\_call\to id\ punc\_round\_left\ expression\_list\ punc\_round\_right\)
+
+  调用函数，从符号表中查找到函数后，对比是否参数类型和参数数量相同，并且对于引用参数需要看到对应表达式是否是一个单独的变量。
+\end{itemize}
+
+\begin{itemize}
+\item
+  \(read\)与\(write\)处理
+
+  将read和write对应的所有标识符记录下来，提供给代码生成类型信息。
+\end{itemize}
+
+\hypertarget{header-n251}{%
+\subsection{6.程序测试}\label{header-n251}}
+
+\hypertarget{header-n252}{%
+\subsection{8.}\label{header-n252}}
+
+\begin{itemize}
+\item
+  体会与收获
+
+  兴淑鹏：这次我主要负责的是语义分析部分和测试的部分，在这次的程序编写过程我真正实际接触到了\textbf{pascal}语言的语义分析过程，真正实际的面对了语义分析中的实际问题。认识到了在完成一个比较复杂的代码，应该先进行由简单到难的分步，再依次逐步完成。像是在语义分析过程要处理的问题其实很多，最基本的是常量和变量的定义，再到运算表达式的判断，以及if语句和for语句等等。通过一步步完善这些功能，我对于实际的符号表维护和错误检查有了完整的理解。并且由于语义分析需要获取到词法分析和语法分析的结果并且为代码生成提供接口，需要小组成员之间互相足够的交流协助，我更加了解了小组工作中如何互相协同以便于个部分的对接。在测试的过程中，我更多的了解到了测试对于程序功能检测的重要性，因为在完成很大的工程任务时候，出现纰漏是难免的，这时就需要足够多的样例对于程序执行的各种可能情况进行测试，在测试过程中找出了各个部分的bug并修复。
+\item
+  遇到的主要问题以及解决方案
+
+  兴淑鹏：遇到的主要问题：1.如何解决对于函数递归中标识符重名问题，例如在计算\textbf{gcd}的函数中会遇到返回值对应标识符名和调用函数的标识符名相同，我最后选择增加了一个特殊的查找标识符的函数，由于在文法要求中函数定义是无法嵌套的，因此对于函数调用的查询一定是在主符号表中，所以增加在主符号表中查找标识符的函数专门对于过程和函数的调用进行标识符查找；2.如何解决对于引用参数，调用该函数对应的参数必须是单一的实际变量问题，例如在\textbf{swap}函数中通常我们会将参数设置为引用参数，而调用该函数时如果调用时为\(swap(a+b,a+c)\)
+  显然这样是存在错误的。为此我对于记录\textbf{id}信息的\(idStack\)栈中，当使用操作符将两个变量合并后，记录其对应的\(idType\)由\(\_variable\)修改为\(\_none\)
+\item
+  修改建议
+
+  建议增加可以对于语义错误的恢复功能，并且使得各种错误除了输出输出行号外，还能够输出列号等
+\end{itemize}
+
+\end{document}

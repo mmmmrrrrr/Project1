@@ -1,4 +1,4 @@
-[I]>>>Read data from file: test1.pas
+[I]>>>Read data from file: test.pas
 Syntax analysis Success！
 Semantic analysis Success!!
 test.cpp:3:18: warning: overflow in conversion from 'int' to 'short int' changes value from '200005' to '3397' [-Woverflow]
@@ -10,7 +10,7 @@ Code compiled successfully!
 6 3 3
 1 2 3 2 2 2
 6 2 4
-1 1 2 2 2 
+1 1 2 2 2 2
 6 5 1
 6 5 4 3 2 1
 4 0 4
