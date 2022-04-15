@@ -919,11 +919,11 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 			{
 				if (no_error)
 				{
-					cerr << "Syntax analysis Success！" << endl;
+					cerr << "Syntax analysis Success!" << endl;
 				}
 				else
 				{
-					cerr << "Syntax analysis Failed! " << endl;
+					cerr << "Syntax analysis Failed!" << endl;
 				}
 				reduces.push_back(0);
 				break;

@@ -1,0 +1,9 @@
+[I]>>>Read data from file: ./runFile/test.pas
+Syntax analysis Successï¼
+Semantic analysis Success!!
+Code compiled successfully!
+'.' ²»ÊÇÄÚ²¿»òÍâ²¿ÃüÁî£¬Ò²²»ÊÇ¿ÉÔËĞĞµÄ³ÌĞò
+»òÅú´¦ÀíÎÄ¼ş¡£
+ ---- test.in ---- 
+49 21
+ ---- test.out ---- 

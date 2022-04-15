@@ -1,4 +1,0 @@
-[I]>>>Read data from file: test.pas
-Syntax analysis Success！
-Semantic analysis Success!!
-Code compiled successfully!

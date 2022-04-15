@@ -1,7 +1,6 @@
 _Pragma("once")
-#include <bits/stdc++.h>
-#include"semantic_analysis.h"
 #include "grammar_analysis.h"
+#include "semantic_analysis.h"
 using namespace std;
 bool isInt(string str);//判断一个字符串是不是整数
 string  id_type(string s);//找到常量对应的类型

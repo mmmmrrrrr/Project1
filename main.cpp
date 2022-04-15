@@ -2,15 +2,16 @@
 #include "semantic_analysis.h"
 #include "code_generate.h"
 #include "FlexLexer.h"
-#include "windows.h"
+#include <windows.h>
+#include <fstream>
 #pragma execution_character_set("utf-8")
 int main(int argc, char **argv)
 {
 	int runFlag = 0;
-	string readFileName = "test.pas";
+	string readFileName{"./runFile/test.pas"};
 	for (int i = 1; i < argc; ++i)
 	{
-		//printf("%s", argv[i]);
+		// printf("%s", argv[i]);
 		if (!strcmp(argv[i], "-r"))
 			runFlag = 1;
 		if (!strcmp(argv[i], "-w"))
@@ -23,10 +24,10 @@ int main(int argc, char **argv)
 			readFileName = argv[i + 1];
 		}
 	}
-	freopen("test.cpp", "w", stdout);
-	freopen("message.txt", "w", stderr);
+	freopen("./runFile/test.cpp", "w", stdout);
+	freopen("./runFile/message.txt", "w", stderr);
 	ifstream ifile(readFileName);
-	ofstream ofile("lexOut.txt");
+	ofstream ofile("./runFile/lexOut.txt");
 	yyFlexLexer yy;
 	yy.switch_streams(ifile, ofile);
 	cerr << "[I]>>>Read data from file: " << readFileName << endl;
@@ -35,7 +36,7 @@ int main(int argc, char **argv)
 	ofile.close();
 	yy.yylex();
 	ifstream productIn;
-	//productIn.open(".\\production_sequence.pas");
+	// productIn.open(".\\production_sequence.pas");
 	map<int, string> numToProduct;
 	numToProduct.clear();
 	/*
@@ -73,16 +74,16 @@ int main(int argc, char **argv)
 	cout << generate_Code(product_seq, token_seq, token_seq.size() - 1) << endl;
 	cerr << "Semantic analysis Success!!" << endl;
 	fclose(stdout);
-	if (!system("g++ -o test test.cpp"))
+	if (!system("g++ -o ./runFile/test ./runFile/test.cpp"))
 	{
 		cerr << "Code compiled successfully!" << endl;
 		if (runFlag)
 		{
-			system("test<test.in>test.out");
+			system("./runFile/test<./runFile/test.in>./runFile/test.out");
 			cerr << " ---- test.in ---- " << endl;
 			ifstream fin, fout;
-			fin.open(".\\test.in");
-			fout.open(".\\test.out");
+			fin.open("./runFile/test.in");
+			fout.open("./runFile/test.out");
 			string str;
 			while (getline(fin, str, '\n'))
 			{

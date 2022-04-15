@@ -109,7 +109,7 @@ string id_type(string s)
 	return "";
 }
 
-string idtoType(Id name_to_id) //�ҵ������ڷ��ű��ж�Ӧ������
+string idtoType(Id name_to_id) 
 {
 	string id_type;
 	if (name_to_id.dataType.basicType == 1)

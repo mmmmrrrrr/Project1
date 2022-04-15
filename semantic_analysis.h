@@ -1,7 +1,8 @@
-#ifndef SEMANTIC
-#define SEMANTIC
+_Pragma("once")
 #include "grammar_analysis.h"
-#include <bits/stdc++.h>
+#include <vector>
+#include <string>
+#include <queue>
 using namespace std;
 
 enum BasicType : int
@@ -74,4 +75,3 @@ Id getConst();
 vector<Id> getRlist();
 vector<Id> getWlist();
 Id getArray(string funName,string arrayName);
-#endif
