@@ -1,4 +1,4 @@
-#pragma once
+_Pragma("once")
 #include <bits/stdc++.h>
 #include"semantic_analysis.h"
 #include "grammar_analysis.h"

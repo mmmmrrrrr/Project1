@@ -1,5 +1,4 @@
-#ifndef GRAMMAR
-#define GRAMMAR
+_Pragma("once")
 
 #include <iostream>
 #include <vector>
@@ -141,5 +140,3 @@ vector<int> control_program(LR_PredictTable LRtable, Grammar grammar, vector<tok
 
 void extend_closure(Grammar grammer, closure &c);//��ɱհ�����չ
 bool in_closure(closure c, sentence s, int pos); //�ж�һ���հ����Ƿ���������
-
-#endif
